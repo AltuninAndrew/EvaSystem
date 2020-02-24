@@ -11,7 +11,11 @@ namespace EvaSystem.Controllers
         [HttpGet(Contracts.ApiRoutes.Test.Value)]
         public IActionResult GetTestValue()
         {
-            return Ok();
+            var result = new
+            {
+                message = "ok",
+            };
+            return Ok(result); 
         }
 
     }

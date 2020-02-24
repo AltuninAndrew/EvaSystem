@@ -13,6 +13,11 @@ namespace EvaSystem.Contracts
             public const string Value = "api/test";
         }
 
+        public static class Identity
+        {
+            public const string Login = "api/identity/login";
+            public const string Register = "api/identity/register";
+        }
     
     }
 }

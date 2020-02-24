@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Этот файл используется процессом публикации или упаковки вашего веб-проекта. Можно настроить поведение этого процесса,
+изменив этот файл MSBuild. Подробности см. на странице https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAVHVWHLX2ckm6Es3kv0ZlbgAAAAACAAAAAAAQZgAAAAEAACAAAAC14h4GoARk8Z6W5h6JIvkw3pPOi0EXfbT6s8DSeZ/s0wAAAAAOgAAAAAIAACAAAAA6XhkQ2sHpO98ZYeLZC0FI4eU//q+M9fnvw/ckC2tdU4AAAABryK366N14GLjK9TedpdTTyH+huoAcw0s9U09h5EKdjueKymJGPJGEUTgT7FO0BBDOY1Te3llcB0PzKgXn2Vh4/NGIt+8K2Y8tYPB++t+29QB6YAiv83QbNlRxKxFPGvYSkjEMPAa6oJTZi1kXYE3oDri4b4DK2+ZD28FqIR8o00AAAACpM8EUdg+IwrF3TrWJBETob9/ybkQzhSchbvT8aVFkzlQettYq3EA2sBN7iAKST1o/o46QLNRxECicrIIFks+b</EncryptedPassword>
+  </PropertyGroup>
+  <ItemGroup>
+    <EFMigrations Include="TweetBook.Data.DataContext">
+      <Value>Data Source=tcp:tweetbookdbserver.database.windows.net,1433%3bInitial Catalog=TweetBook_db%3bUser Id=AlAndr%40tweetbookdbserver%3bPassword=Vecmrf23</Value>
+    </EFMigrations>
+  </ItemGroup>
+</Project>

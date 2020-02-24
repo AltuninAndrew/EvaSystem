@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Al_an\\source\\repos\\EvaSystem\\EvaSystem\\EvaSystem.csproj": {}
+    "C:\\Users\\Al_an\\source\\repos\\EvaSystem\\EvaSystem.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Al_an\\source\\repos\\EvaSystem\\EvaSystem\\EvaSystem.csproj": {
+    "C:\\Users\\Al_an\\source\\repos\\EvaSystem\\EvaSystem.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Al_an\\source\\repos\\EvaSystem\\EvaSystem\\EvaSystem.csproj",
+        "projectUniqueName": "C:\\Users\\Al_an\\source\\repos\\EvaSystem\\EvaSystem.csproj",
         "projectName": "EvaSystem",
-        "projectPath": "C:\\Users\\Al_an\\source\\repos\\EvaSystem\\EvaSystem\\EvaSystem.csproj",
+        "projectPath": "C:\\Users\\Al_an\\source\\repos\\EvaSystem\\EvaSystem.csproj",
         "packagesPath": "C:\\Users\\Al_an\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Al_an\\source\\repos\\EvaSystem\\EvaSystem\\obj\\",
+        "outputPath": "C:\\Users\\Al_an\\source\\repos\\EvaSystem\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

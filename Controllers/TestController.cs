@@ -14,6 +14,7 @@ namespace EvaSystem.Controllers
             var result = new
             {
                 message = "ok",
+                status = 1,
             };
             return Ok(result); 
         }

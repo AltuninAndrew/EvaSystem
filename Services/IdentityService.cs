@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -46,7 +47,8 @@ namespace EvaSystem.Services
                     return new AuthResultModel { Success = false, ErrorsMessages = createdUser.Errors.Select(x => x.Description) };
                 }
 
-                var rsa = new RSACryptoServiceProvider(2048);
+                var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret));
+
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
@@ -55,11 +57,12 @@ namespace EvaSystem.Services
                         new Claim(JwtRegisteredClaimNames.Sub, newUser.UserName),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Email, newUser.Email),
+                        new Claim(ClaimsIdentity.DefaultRoleClaimType, newUser.Role),
                         new Claim("id", newUser.Id),
                     }),
                     Expires = DateTime.UtcNow.AddHours(2),
 
-                    SigningCredentials = new SigningCredentials(new RsaSecurityKey(rsa),SecurityAlgorithms.RsaSha256Signature)
+                    SigningCredentials = new SigningCredentials(key,SecurityAlgorithms.HmacSha256Signature)
                 };
 
                 var token = tokenHandler.CreateToken(tokenDescriptor);

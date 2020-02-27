@@ -1,5 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<sitemanifest>
-  <IisApp path="C:\Users\Al_an\source\repos\TweetBook\TweetBook\obj\Debug\netcoreapp3.1\win-x86\PubTmp\Out\" />
-  <dbfullsql path="C:\Users\Al_an\source\repos\TweetBook\TweetBook\obj\Debug\netcoreapp3.1\win-x86\PubTmp\EFSQLScripts\TweetBook.Data.DataContext.sql" />
-</sitemanifest>

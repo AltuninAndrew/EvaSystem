@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<parameters>
-  <parameter name="IIS Web Application Name" description="" value="TweetBook20200207025814" tags="IisApp">
-    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\Al_an\\source\\repos\\TweetBook\\TweetBook\\obj\\Debug\\netcoreapp3\.1\\win-x86\\PubTmp\\Out\\$" />
-  </parameter>
-  <parameter name="TweetBook.Data.DataContext" description="" value="Data Source=tcp:tweetbookdbserver.database.windows.net,1433;Initial Catalog=TweetBook_db;User Id=AlAndr@tweetbookdbserver;Password=Vecmrf23" tags="dbfullsql">
-    <parameterEntry kind="ProviderPath" scope="dbfullsql" match="^C:\\Users\\Al_an\\source\\repos\\TweetBook\\TweetBook\\obj\\Debug\\netcoreapp3\.1\\win-x86\\PubTmp\\EFSQLScripts\\TweetBook\.Data\.DataContext\.sql$" />
-  </parameter>
-</parameters>

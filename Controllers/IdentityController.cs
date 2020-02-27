@@ -13,19 +13,44 @@ namespace EvaSystem.Controllers
     {
         private readonly IIdentityService _identityService;
         
-        IdentityController(IIdentityService identityService)
+        public IdentityController(IIdentityService identityService)
         {
             _identityService = identityService;
 
         }
 
-        [HttpPost(ApiRoutes.Identity.Register)]
-        public async Task<IActionResult> Register([FromBody]UserRegistrationRequest request)
+        [HttpPost(ApiRoutes.Identity.RegisterAdmin)]
+        public async Task<IActionResult> RegisterAdmin([FromBody]UserRegistrationRequest request)
         {
+            var authResponse = await _identityService.RegisterAsync(request.Email, request.Password, "admin");
 
-            return Ok();
+            if(authResponse.Success)
+            {
+                return Ok(authResponse.Token);
+            }
+            else
+            {
+                return BadRequest(authResponse.ErrorsMessages);
+            }
+
+           
         }
 
-        
+        [HttpPost(ApiRoutes.Identity.RegisterClient)]
+        public async Task<IActionResult> RegisterClient([FromBody]UserRegistrationRequest request)
+        {
+
+            var authResponse = await _identityService.RegisterAsync(request.Email, request.Password, "user");
+
+            if (authResponse.Success)
+            {
+                return Ok(authResponse.Token);
+            }
+            else
+            {
+                return BadRequest(authResponse.ErrorsMessages);
+            }
+        }
+
     }
 }

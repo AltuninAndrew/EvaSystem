@@ -7,7 +7,7 @@ namespace EvaSystem.Options
 {
     public class JwtSettings
     {
-        public string Secret { get; set; }
+        public string Secret { get; set; } // to implement random generation rsa
 
     }
 }

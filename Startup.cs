@@ -19,6 +19,7 @@ using System.Configuration;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using EvaSystem.Services;
+using EvaSystem.Models;
 
 namespace EvaSystem
 {
@@ -38,8 +39,9 @@ namespace EvaSystem
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
            
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<UserModel>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<Data.DataContext>();
+                
 
 
             var jwtSettings = new JwtSettings();
@@ -63,7 +65,7 @@ namespace EvaSystem
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
                     ValidateAudience = false,
                     RequireExpirationTime = false,
-                    ValidateLifetime = true
+                    ValidateLifetime = false
                 };
             });
 
@@ -114,7 +116,8 @@ namespace EvaSystem
                 app.UseHsts();
             }
 
-            app.UseAuthentication();
+          
+
 
             var swaggerOptions = new Options.SwaggerOptions();
             Configuration.GetSection(nameof(Options.SwaggerOptions)).Bind(swaggerOptions);
@@ -127,6 +130,9 @@ namespace EvaSystem
 
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

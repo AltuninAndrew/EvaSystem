@@ -16,7 +16,8 @@ namespace EvaSystem.Contracts
         public static class Identity
         {
             public const string Login = "api/identity/login";
-            public const string Register = "api/identity/register";
+            public const string RegisterAdmin = "api/identity/admin_register";
+            public const string RegisterClient = "api/identity/client_register";
         }
     
     }

@@ -19,10 +19,13 @@ namespace EvaSystem.Services
         private readonly UserManager<UserModel> _userMaganer;
         private readonly JwtSettings _jwtSettings;
 
-        public IdentityService(UserManager<UserModel> userMaganer, JwtSettings jwtSettings)
+        public IdentityService(UserManager<UserModel> userMaganer, JwtSettings jwtSettings,PasswordOptions passOptions)
         {
             _userMaganer = userMaganer;
             _jwtSettings = jwtSettings;
+
+            _userMaganer.Options.Password = passOptions;
+
         }
 
         public async Task<AuthResultModel> RegisterAsync(string email, string password, string role)
@@ -42,38 +45,61 @@ namespace EvaSystem.Services
 
                 var createdUser = await _userMaganer.CreateAsync(newUser,password);
 
+                
+
                 if(!createdUser.Succeeded)
                 {
                     return new AuthResultModel { Success = false, ErrorsMessages = createdUser.Errors.Select(x => x.Description) };
                 }
 
-                var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret));
-
-                var tokenHandler = new JwtSecurityTokenHandler();
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(new[]
-                    {
-                        new Claim(JwtRegisteredClaimNames.Sub, newUser.UserName),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(JwtRegisteredClaimNames.Email, newUser.Email),
-                        new Claim(ClaimsIdentity.DefaultRoleClaimType, newUser.Role),
-                        new Claim("id", newUser.Id),
-                    }),
-                    Expires = DateTime.UtcNow.AddHours(2),
-
-                    SigningCredentials = new SigningCredentials(key,SecurityAlgorithms.HmacSha256Signature)
-                };
-
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-
-                return new AuthResultModel { Token = tokenHandler.WriteToken(token), Success = true };
-
+                return GenerateAuthResultForUser(newUser);
+              
             }
             else
             {
                 return new AuthResultModel { Success = false, ErrorsMessages = new[] { "User with this email addres already exist" } };
             }
+        }
+
+        public async Task<AuthResultModel> LoginAsync(string email, string password)
+        {
+            var existingUser = await _userMaganer.FindByEmailAsync(email);
+            
+            if(existingUser !=null && await _userMaganer.CheckPasswordAsync(existingUser,password))
+            {
+                return GenerateAuthResultForUser(existingUser);
+            }
+            else
+            {
+                return new AuthResultModel { Success = false, ErrorsMessages = new[] { "Email/password incorrect" } };
+            }
+
+           
+        }
+
+        private AuthResultModel GenerateAuthResultForUser(UserModel userModel)
+        {
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_jwtSettings.Secret));
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                        new Claim(JwtRegisteredClaimNames.Sub, userModel.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Email, userModel.Email),
+                        new Claim(ClaimsIdentity.DefaultRoleClaimType, userModel.Role),
+                        new Claim("id", userModel.Id),
+                    }),
+                Expires = DateTime.UtcNow.AddHours(2),
+
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return new AuthResultModel { Token = tokenHandler.WriteToken(token), Success = true };
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EvaSystem.Contracts.Requests
 {
-    public class UserRegistrationRequest
+    public class UserLoginRequest
     {
         [EmailAddress]
         public string Email { get; set; }

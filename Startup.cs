@@ -46,8 +46,12 @@ namespace EvaSystem
 
             var jwtSettings = new JwtSettings();
             Configuration.Bind(nameof(jwtSettings), jwtSettings);
-
             services.AddSingleton(jwtSettings);
+
+            var passwordRequireOptions = new PasswordOptions();
+            Configuration.Bind(nameof(passwordRequireOptions), passwordRequireOptions);
+            services.AddSingleton(passwordRequireOptions);
+
             services.AddScoped<IIdentityService,IdentityService>();
 
 

@@ -16,12 +16,17 @@ namespace EvaSystem.Controllers
         public IdentityController(IIdentityService identityService)
         {
             _identityService = identityService;
-
         }
 
         [HttpPost(ApiRoutes.Identity.RegisterAdmin)]
         public async Task<IActionResult> RegisterAdmin([FromBody]UserRegistrationRequest request)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)));
+            }
+
             var authResponse = await _identityService.RegisterAsync(request.Email, request.Password, "admin");
 
             if(authResponse.Success)
@@ -39,8 +44,27 @@ namespace EvaSystem.Controllers
         [HttpPost(ApiRoutes.Identity.RegisterClient)]
         public async Task<IActionResult> RegisterClient([FromBody]UserRegistrationRequest request)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)));
+            }
 
             var authResponse = await _identityService.RegisterAsync(request.Email, request.Password, "user");
+
+            if (authResponse.Success)
+            {
+                return Ok(authResponse.Token);
+            }
+            else
+            {
+                return BadRequest(authResponse.ErrorsMessages);
+            }
+        }
+
+        [HttpPost(ApiRoutes.Identity.Login)]
+        public async Task<IActionResult> Login([FromBody]UserLoginRequest request)
+        {
+            var authResponse = await _identityService.LoginAsync(request.Email, request.Password);
 
             if (authResponse.Success)
             {

@@ -9,5 +9,7 @@ namespace EvaSystem.Services
     public interface IIdentityService
     {
         public Task<AuthResultModel> RegisterAsync(string email, string password, string role);
+
+        public Task<AuthResultModel> LoginAsync(string email, string password);
     }
 }

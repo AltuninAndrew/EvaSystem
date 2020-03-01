@@ -35,17 +35,17 @@ namespace EvaSystem
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<Data.DataContext>(options =>
+            services.AddDbContext<DataContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
            
             services.AddDefaultIdentity<UserModel>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<Data.DataContext>();
+                .AddEntityFrameworkStores<DataContext>();
                 
 
 
             var jwtSettings = new JwtSettings();
-            Configuration.Bind(nameof(jwtSettings), jwtSettings);
+            //Configuration.Bind(nameof(jwtSettings), jwtSettings);
             services.AddSingleton(jwtSettings);
 
             var passwordRequireOptions = new PasswordOptions();
@@ -76,14 +76,14 @@ namespace EvaSystem
 
 
             services.AddSwaggerGen(x => { 
-                x.SwaggerDoc("v0.1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "EvaSystem Api", Version = "v0.1" });
+                x.SwaggerDoc("v0.1", new OpenApiInfo { Title = "EvaSystem Api", Version = "v0.1" });
 
-                x.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "Jwt authorization header using bearer scheme",
                     Name = "Authorization",
-                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
                 });
                 
                 x.AddSecurityRequirement(new OpenApiSecurityRequirement()

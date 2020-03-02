@@ -23,12 +23,10 @@ namespace EvaSystem.Services
         {
             _userMaganer = userMaganer;
             _jwtSettings = jwtSettings;
-
             _userMaganer.Options.Password = passOptions;
-
         }
 
-        public async Task<AuthResultModel> RegisterAsync(string email, string password, string role)
+        public async Task<AuthResultModel> RegisterAsync(string email, string firstName, string lastName, string password, string role)
         {
             var existingUser = await _userMaganer.FindByEmailAsync(email);
 
@@ -40,7 +38,9 @@ namespace EvaSystem.Services
                 {
                     Email = email,
                     UserName = userName,
-                    Role = role
+                    Role = role,
+                    FirstName = firstName,
+                    LastName = lastName
                 };
 
                 var createdUser = await _userMaganer.CreateAsync(newUser,password);

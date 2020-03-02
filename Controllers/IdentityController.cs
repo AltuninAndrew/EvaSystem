@@ -19,7 +19,7 @@ namespace EvaSystem.Controllers
         }
 
         [HttpPost(ApiRoutes.Identity.RegisterAdmin)]
-        public async Task<IActionResult> RegisterAdmin([FromBody]UserRegistrationRequest request)
+        public async Task<IActionResult> RegisterAdmin([FromBody]ClientRegistrationRequest request)
         {
 
             if (!ModelState.IsValid)
@@ -42,7 +42,7 @@ namespace EvaSystem.Controllers
         }
 
         [HttpPost(ApiRoutes.Identity.RegisterClient)]
-        public async Task<IActionResult> RegisterClient([FromBody]UserRegistrationRequest request)
+        public async Task<IActionResult> RegisterClient([FromBody]ClientRegistrationRequest request)
         {
             if(!ModelState.IsValid)
             {
@@ -62,7 +62,7 @@ namespace EvaSystem.Controllers
         }
 
         [HttpPost(ApiRoutes.Identity.Login)]
-        public async Task<IActionResult> Login([FromBody]UserLoginRequest request)
+        public async Task<IActionResult> Login([FromBody]ClientLoginRequest request)
         {
             var authResponse = await _identityService.LoginAsync(request.Email, request.Password);
 
@@ -75,6 +75,7 @@ namespace EvaSystem.Controllers
                 return BadRequest(authResponse.ErrorsMessages);
             }
         }
+
 
     }
 }

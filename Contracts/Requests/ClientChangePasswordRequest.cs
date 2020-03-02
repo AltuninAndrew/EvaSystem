@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace EvaSystem.Contracts.Requests
 {
-    public class UserLoginRequest
+    public class ClientChangePasswordRequest
     {
-        [EmailAddress]
-        public string Email { get; set; }
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string OldPassword { get; set; }
+        public string NewPassword { get; set; }
     }
 }

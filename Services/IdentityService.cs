@@ -73,9 +73,25 @@ namespace EvaSystem.Services
             {
                 return new AuthResultModel { Success = false, ErrorsMessages = new[] { "Email/password incorrect" } };
             }
-
-           
+  
         }
+
+        public async Task<ChangedPasswordResultModel> ChangePasswordAsync(string username,string oldPassword, string newPassword)
+        {
+            var foundUser = await _userMaganer.FindByNameAsync(username);
+
+            if(foundUser!=null)
+            {
+                IdentityResult identityResult = await _userMaganer.ChangePasswordAsync(foundUser, oldPassword, newPassword);
+                return new ChangedPasswordResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description)};
+            }
+            else
+            {
+                return new ChangedPasswordResultModel{Success=false,ErrorsMessages = new[] {"User not found"}};
+            }
+
+        }
+        
 
         private AuthResultModel GenerateAuthResultForUser(UserModel userModel)
         {
@@ -89,7 +105,7 @@ namespace EvaSystem.Services
                         new Claim(JwtRegisteredClaimNames.Sub, userModel.UserName),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Email, userModel.Email),
-                        new Claim(ClaimsIdentity.DefaultRoleClaimType, userModel.Role),
+                        new Claim("Role", userModel.Role),
                         new Claim("id", userModel.Id),
                     }),
                 Expires = DateTime.UtcNow.AddHours(2),

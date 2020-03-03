@@ -12,6 +12,8 @@ namespace EvaSystem.Services
 
         public Task<AuthResultModel> LoginAsync(string email, string password);
 
-        public Task<ChangedPasswordResultModel> ChangePasswordAsync(string username, string oldPassword, string newPassword);
+        public Task<ChangedInformationResultModel> ChangePasswordAsync(string username, string oldPassword, string newPassword);
+
+        public Task<ChangedInformationResultModel> ChangeEmailAsync(string username, string newEmail,string password);
     }
 }

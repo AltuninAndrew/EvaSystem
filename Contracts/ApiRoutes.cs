@@ -24,6 +24,7 @@ namespace EvaSystem.Contracts
         public static class ClientData
         {
             public const string ChangePassword = "api/ClientData/change_password/{username}";
+            public const string ChangeEmail = "api/ClientData/change_email/{username}";
         }
     
     }

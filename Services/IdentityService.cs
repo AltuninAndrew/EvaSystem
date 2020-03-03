@@ -16,19 +16,19 @@ namespace EvaSystem.Services
 {
     public class IdentityService : IIdentityService
     {
-        private readonly UserManager<UserModel> _userMaganer;
+        private readonly UserManager<UserModel> _userManager;
         private readonly JwtSettings _jwtSettings;
 
         public IdentityService(UserManager<UserModel> userMaganer, JwtSettings jwtSettings,PasswordOptions passOptions)
         {
-            _userMaganer = userMaganer;
+            _userManager = userMaganer;
             _jwtSettings = jwtSettings;
-            _userMaganer.Options.Password = passOptions;
+            _userManager.Options.Password = passOptions;
         }
 
         public async Task<AuthResultModel> RegisterAsync(string email, string firstName, string lastName, string password, string role)
         {
-            var existingUser = await _userMaganer.FindByEmailAsync(email);
+            var existingUser = await _userManager.FindByEmailAsync(email);
 
             if(existingUser == null)
             {
@@ -43,7 +43,7 @@ namespace EvaSystem.Services
                     LastName = lastName
                 };
 
-                var createdUser = await _userMaganer.CreateAsync(newUser,password);
+                var createdUser = await _userManager.CreateAsync(newUser,password);
 
                 
 
@@ -63,9 +63,9 @@ namespace EvaSystem.Services
 
         public async Task<AuthResultModel> LoginAsync(string email, string password)
         {
-            var existingUser = await _userMaganer.FindByEmailAsync(email);
+            var existingUser = await _userManager.FindByEmailAsync(email);
             
-            if(existingUser !=null && await _userMaganer.CheckPasswordAsync(existingUser,password))
+            if(existingUser !=null && await _userManager.CheckPasswordAsync(existingUser,password))
             {
                 return GenerateAuthResultForUser(existingUser);
             }
@@ -76,22 +76,39 @@ namespace EvaSystem.Services
   
         }
 
-        public async Task<ChangedPasswordResultModel> ChangePasswordAsync(string username,string oldPassword, string newPassword)
+        public async Task<ChangedInformationResultModel> ChangePasswordAsync(string username,string oldPassword, string newPassword)
         {
-            var foundUser = await _userMaganer.FindByNameAsync(username);
+            var foundUser = await _userManager.FindByNameAsync(username);
 
             if(foundUser!=null)
             {
-                IdentityResult identityResult = await _userMaganer.ChangePasswordAsync(foundUser, oldPassword, newPassword);
-                return new ChangedPasswordResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description)};
+                IdentityResult identityResult = await _userManager.ChangePasswordAsync(foundUser, oldPassword, newPassword);
+                return new ChangedInformationResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description)};
             }
             else
             {
-                return new ChangedPasswordResultModel{Success=false,ErrorsMessages = new[] {"User not found"}};
+                return new ChangedInformationResultModel{Success=false,ErrorsMessages = new[] {"User not found"}};
             }
 
         }
-        
+
+        public async Task<ChangedInformationResultModel> ChangeEmailAsync(string username, string newEmail,string password)
+        {
+            var foundUser = await _userManager.FindByNameAsync(username);
+
+            if (foundUser != null && await _userManager.CheckPasswordAsync(foundUser,password))
+            {
+                foundUser.Email = newEmail;
+                foundUser.UserName = newEmail.Substring(0, newEmail.LastIndexOf('@'));
+                IdentityResult identityResult = await _userManager.UpdateAsync(foundUser);
+                return new ChangedInformationResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description) };
+            }
+            else
+            {
+                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "User not found or password incorrect" } };
+            }
+        }
+
 
         private AuthResultModel GenerateAuthResultForUser(UserModel userModel)
         {
@@ -102,7 +119,7 @@ namespace EvaSystem.Services
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                        new Claim(JwtRegisteredClaimNames.Sub, userModel.UserName),
+                        new Claim("UserName", userModel.UserName),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Email, userModel.Email),
                         new Claim("Role", userModel.Role),

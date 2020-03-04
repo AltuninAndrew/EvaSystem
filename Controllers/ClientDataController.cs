@@ -70,6 +70,11 @@ namespace EvaSystem.Controllers
         {
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
 
+            if(newPosition.Length <2)
+            {
+                return BadRequest("Length should be more then 1 chars");
+            }
+
             if (userRole != "admin")
             {
                 return BadRequest("No access");

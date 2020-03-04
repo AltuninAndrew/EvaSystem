@@ -64,5 +64,30 @@ namespace EvaSystem.Controllers
         }
 
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut(ApiRoutes.ClientData.ChangePosition)]
+        public async Task<IActionResult> ChangePosition([FromRoute]string username, string newPosition)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return BadRequest("No access");
+            }
+
+            var changeResponse = await _identityService.ChangePositionAsync(username, newPosition);
+
+            if (changeResponse.Success)
+            {
+                return Ok("Role chage is successful");
+            }
+            else
+            {
+                return BadRequest(changeResponse.ErrorsMessages);
+            }
+
+        }
+
+
     }
 }

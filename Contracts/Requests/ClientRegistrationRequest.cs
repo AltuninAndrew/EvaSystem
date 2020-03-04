@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EvaSystem.Contracts.Requests
 {
@@ -21,5 +17,7 @@ namespace EvaSystem.Contracts.Requests
         [MinLength(2, ErrorMessage = "Last name lenght should be more then 1 chars")]
         [MaxLength(50, ErrorMessage = "Last name lenght should be less then 50 char")]
         public string LastName { get; set; }
+
+        public string Position { get; set; }
     }
 }

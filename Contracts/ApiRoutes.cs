@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace EvaSystem.Contracts
+﻿namespace EvaSystem.Contracts
 {
     public static class ApiRoutes
     {
@@ -25,6 +20,7 @@ namespace EvaSystem.Contracts
         {
             public const string ChangePassword = "api/ClientData/change_password/{username}";
             public const string ChangeEmail = "api/ClientData/change_email/{username}";
+            public const string ChangePosition = "api/ClientData/change_position/{username}";
         }
     
     }

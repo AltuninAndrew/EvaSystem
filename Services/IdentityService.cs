@@ -26,7 +26,7 @@ namespace EvaSystem.Services
             _userManager.Options.Password = passOptions;
         }
 
-        public async Task<AuthResultModel> RegisterAsync(string email, string firstName, string lastName, string password, string role)
+        public async Task<AuthResultModel> RegisterAsync(string email, string firstName, string lastName, string password, string role,string position)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
 
@@ -40,7 +40,9 @@ namespace EvaSystem.Services
                     UserName = userName,
                     Role = role,
                     FirstName = firstName,
-                    LastName = lastName
+                    LastName = lastName,
+                    Position = position
+                    
                 };
 
                 var createdUser = await _userManager.CreateAsync(newUser,password);
@@ -109,6 +111,21 @@ namespace EvaSystem.Services
             }
         }
 
+        public async Task<ChangedInformationResultModel> ChangePositionAsync(string username, string newPosition)
+        {
+            var foundUser = await _userManager.FindByNameAsync(username);
+
+            if (foundUser != null)
+            {
+                foundUser.Position = newPosition;
+                IdentityResult identityResult = await _userManager.UpdateAsync(foundUser);
+                return new ChangedInformationResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description) };
+            }
+            else
+            {
+                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "User not found" } };
+            }
+        }
 
         private AuthResultModel GenerateAuthResultForUser(UserModel userModel)
         {

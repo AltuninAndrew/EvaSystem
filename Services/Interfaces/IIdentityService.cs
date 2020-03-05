@@ -17,5 +17,7 @@ namespace EvaSystem.Services
         public Task<ChangedInformationResultModel> ChangeEmailAsync(string username, string newEmail,string password);
 
         public Task<ChangedInformationResultModel> ChangePositionAsync(string username, string newPosition);
+
+        public Task<ChangedInformationResultModel> DeleteUser(string username);
     }
 }

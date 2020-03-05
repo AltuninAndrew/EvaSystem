@@ -24,6 +24,7 @@ namespace EvaSystem.Services
             _userManager = userMaganer;
             _jwtSettings = jwtSettings;
             _userManager.Options.Password = passOptions;
+
         }
 
         public async Task<AuthResultModel> RegisterAsync(string email, string firstName, string lastName, string password, string role,string position)
@@ -126,6 +127,22 @@ namespace EvaSystem.Services
                 return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "User not found" } };
             }
         }
+
+        public async Task<ChangedInformationResultModel> DeleteUser(string username)
+        {
+            var foundUser = await _userManager.FindByNameAsync(username);
+
+            if (foundUser != null)
+            {       
+                IdentityResult identityResult = await _userManager.DeleteAsync(foundUser);
+                return new ChangedInformationResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description) };
+            }
+            else
+            {
+                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "User not found" } };
+            }
+        }
+
 
         private AuthResultModel GenerateAuthResultForUser(UserModel userModel)
         {

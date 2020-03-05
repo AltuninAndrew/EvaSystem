@@ -93,6 +93,29 @@ namespace EvaSystem.Controllers
 
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete(ApiRoutes.ClientData.DeleteUser)]
+        public async Task<IActionResult> DeleteUser([FromRoute]string username)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return BadRequest("No access");
+            }
+
+            var changeResponse = await _identityService.DeleteUser(username);
+
+            if (changeResponse.Success)
+            {
+                return Ok("User was successfully deleted");
+            }
+            else
+            {
+                return BadRequest(changeResponse.ErrorsMessages);
+            }
+
+        }
 
     }
 }

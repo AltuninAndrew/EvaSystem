@@ -21,6 +21,7 @@
             public const string ChangePassword = "api/ClientData/change_password/{username}";
             public const string ChangeEmail = "api/ClientData/change_email/{username}";
             public const string ChangePosition = "api/ClientData/change_position/{username}";
+            public const string DeleteUser = "api/ClientData/delete_user/{username}";
         }
     
     }

@@ -19,5 +19,7 @@ namespace EvaSystem.Services
         public Task<ChangedInformationResultModel> ChangePositionAsync(string username, string newPosition);
 
         public Task<ChangedInformationResultModel> DeleteUser(string username);
+
+        public Task<ChangedInformationResultModel> AddInterectedUsersAsync(string username, string[] interectedUserNames);
     }
 }

@@ -20,5 +20,7 @@ namespace EvaSystem.Contracts.Requests
 
         [MinLength(2, ErrorMessage ="Length should be more then 1 chars")]
         public string Position { get; set; }
+
+        //public string[] InterectedUserNames { get; set; }
     }
 }

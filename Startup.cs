@@ -52,6 +52,7 @@ namespace EvaSystem
             services.AddSingleton(passwordRequireOptions);
 
             services.AddScoped<IIdentityService,IdentityService>();
+            
 
 
             services.AddAuthentication(x =>

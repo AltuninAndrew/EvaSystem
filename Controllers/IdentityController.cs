@@ -12,6 +12,7 @@ namespace EvaSystem.Controllers
     public class IdentityController:Controller
     {
         private readonly IIdentityService _identityService;
+
         
         public IdentityController(IIdentityService identityService)
         {
@@ -31,16 +32,13 @@ namespace EvaSystem.Controllers
             var authResponse = await _identityService.RegisterAsync(request.Email,request.FirstName,request.LastName, request.Password, "admin",
                 request.Position);
 
-            if(authResponse.Success)
-            {
-                return Ok(authResponse.Token);
-            }
-            else
+            if(!authResponse.Success)
             {
                 return BadRequest(authResponse.ErrorsMessages);
             }
 
-           
+            return Ok(authResponse);
+
         }
 
         [HttpPost(ApiRoutes.Identity.RegisterClient)]
@@ -54,14 +52,13 @@ namespace EvaSystem.Controllers
             var authResponse = await _identityService.RegisterAsync(request.Email,request.FirstName,request.LastName,request.Password, "user",
                 request.Position);
 
-            if (authResponse.Success)
-            {
-                return Ok(authResponse.Token);
-            }
-            else
+
+            if (!authResponse.Success)
             {
                 return BadRequest(authResponse.ErrorsMessages);
             }
+
+            return Ok(authResponse);
         }
 
         [HttpPost(ApiRoutes.Identity.Login)]
@@ -69,14 +66,12 @@ namespace EvaSystem.Controllers
         {
             var authResponse = await _identityService.LoginAsync(request.Email, request.Password);
 
-            if (authResponse.Success)
-            {
-                return Ok(authResponse.Token);
-            }
-            else
+            if (!authResponse.Success)
             {
                 return BadRequest(authResponse.ErrorsMessages);
             }
+
+            return Ok(authResponse);
         }
 
 

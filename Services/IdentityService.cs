@@ -1,4 +1,5 @@
-﻿using EvaSystem.Models;
+﻿using EvaSystem.Data;
+using EvaSystem.Models;
 using EvaSystem.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -18,13 +19,14 @@ namespace EvaSystem.Services
     {
         private readonly UserManager<UserModel> _userManager;
         private readonly JwtSettings _jwtSettings;
+        private readonly DataContext _dataContext;
 
-        public IdentityService(UserManager<UserModel> userMaganer, JwtSettings jwtSettings,PasswordOptions passOptions)
-        {
-            _userManager = userMaganer;
+        public IdentityService(UserManager<UserModel> userManager, JwtSettings jwtSettings,PasswordOptions passOptions,DataContext dataContext)
+        { 
+            _userManager = userManager;
             _jwtSettings = jwtSettings;
             _userManager.Options.Password = passOptions;
-
+            _dataContext = dataContext;
         }
 
         public async Task<AuthResultModel> RegisterAsync(string email, string firstName, string lastName, string password, string role,string position)
@@ -45,10 +47,8 @@ namespace EvaSystem.Services
                     Position = position
                     
                 };
-
+           
                 var createdUser = await _userManager.CreateAsync(newUser,password);
-
-                
 
                 if(!createdUser.Succeeded)
                 {
@@ -67,8 +67,8 @@ namespace EvaSystem.Services
         public async Task<AuthResultModel> LoginAsync(string email, string password)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
-            
-            if(existingUser !=null && await _userManager.CheckPasswordAsync(existingUser,password))
+
+            if (existingUser !=null && await _userManager.CheckPasswordAsync(existingUser,password))
             {
                 return GenerateAuthResultForUser(existingUser);
             }
@@ -143,6 +143,66 @@ namespace EvaSystem.Services
             }
         }
 
+        public async Task<ChangedInformationResultModel> AddInterectedUsersAsync(string username, string[] interectedUserNames)
+        {
+            List<InterectedUserModel> models = new List<InterectedUserModel>();
+            List<string> existingModels = new List<string>();
+
+            foreach (var element in interectedUserNames)
+            {
+                var newCommunicatation = new InterectedUserModel { UserName = username, InterectedUserName = element };
+                if (!_dataContext.interectedUsers.Contains(newCommunicatation))
+                {
+                    models.Add(newCommunicatation);
+                }
+                else
+                {
+                    existingModels.Add($"{newCommunicatation.UserName} : {newCommunicatation.InterectedUserName}");
+                }
+            }
+
+            if (models.Count > 0)
+            {
+                await _dataContext.interectedUsers.AddRangeAsync(models);
+                await _dataContext.SaveChangesAsync();
+            }
+
+            if (models.Count == 0)
+            {
+                return new ChangedInformationResultModel { ErrorsMessages = new[] { "Specified communications already exist" }, Success = false };
+            }
+
+            if (models.Count > 0 && models.Count < interectedUserNames.Length)
+            {
+                return new ChangedInformationResultModel { ErrorsMessages = existingModels, Success = true };
+            }
+
+            return new ChangedInformationResultModel { Success = true };
+
+        }
+
+        public async Task<List<InterectedUserResultModel>> GetInterectedUsers(string username)
+        {
+
+            List<InterectedUserResultModel> resultUsers = new List<InterectedUserResultModel>();
+
+            var interectedUsers = _dataContext.interectedUsers.Where(x => x.UserName == username).ToList();
+
+            foreach (var elemet in interectedUsers)
+            {
+                var userModel = await _userManager.FindByNameAsync(elemet.InterectedUserName);
+                resultUsers.Add(new InterectedUserResultModel { FirstName = userModel.FirstName, LastName = userModel.LastName, Position = userModel.Position });
+            }
+
+            if (resultUsers.Count > 0)
+            {
+                return resultUsers;
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         private AuthResultModel GenerateAuthResultForUser(UserModel userModel)
         {
@@ -161,12 +221,16 @@ namespace EvaSystem.Services
                     }),
                 Expires = DateTime.UtcNow.AddHours(2),
 
-                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature) 
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return new AuthResultModel { Token = tokenHandler.WriteToken(token), Success = true };
+            return new AuthResultModel { Token = tokenHandler.WriteToken(token), Success = true, UserFirstName = userModel.FirstName,
+            UserLastName = userModel.LastName, UserPosition = userModel.Position};
         }
+
+       
+
     }
 }

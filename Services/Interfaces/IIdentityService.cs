@@ -20,6 +20,13 @@ namespace EvaSystem.Services
 
         public Task<ChangedInformationResultModel> DeleteUser(string username);
 
-        public Task<ChangedInformationResultModel> AddInterectedUsersAsync(string username, string[] interectedUserNames);
+        public Task<ChangedInformationResultModel> AddСommunicationUsersAsync(string username, string[] interectedUserNames);
+
+        public Task<List<InterectedUserResultModel>> GetInterectedUsers(string username);
+
+        public Task<ChangedInformationResultModel> DeleteUserFromInterectedUsersTable(string username);
+
+        public Task<ChangedInformationResultModel> DeleteСommunication(string username, string interectedUserName);
+
     }
 }

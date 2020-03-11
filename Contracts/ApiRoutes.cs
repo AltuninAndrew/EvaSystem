@@ -22,6 +22,10 @@
             public const string ChangeEmail = "api/ClientData/change_email/{username}";
             public const string ChangePosition = "api/ClientData/change_position/{username}";
             public const string DeleteUser = "api/ClientData/delete_user/{username}";
+            public const string AddCommunicationBtwUsers = "api/ClientData/add_interected_users/{username}";
+            public const string GetInterectedUsers = "api/ClientData/get_interected_users/{username}";
+            public const string DeleteСommunicationBtwUsers = "api/ClientData/delete_interected_users/{username}";
+            public const string DeleteUserFromInterectedUsersTable = "api/ClientData/delete_all_communications/{username}";
         }
     
     }

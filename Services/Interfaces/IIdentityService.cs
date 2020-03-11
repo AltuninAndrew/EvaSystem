@@ -18,15 +18,15 @@ namespace EvaSystem.Services
 
         public Task<ChangedInformationResultModel> ChangePositionAsync(string username, string newPosition);
 
-        public Task<ChangedInformationResultModel> DeleteUser(string username);
+        public Task<ChangedInformationResultModel> DeleteUserAsync(string username);
 
-        public Task<ChangedInformationResultModel> AddСommunicationUsersAsync(string username, string[] interectedUserNames);
+        public Task<ChangedInformationResultModel> AddСommunicationsBtwUsersAsync(string username, string[] interectedUsersName);
 
-        public Task<List<InterectedUserResultModel>> GetInterectedUsers(string username);
+        public Task<List<InterectedUserResultModel>> GetInterectedUsersAsync(string username);
 
-        public Task<ChangedInformationResultModel> DeleteUserFromInterectedUsersTable(string username);
+        public Task<ChangedInformationResultModel> DeleteUserFromInterectedUsersTableAsync(string username);
 
-        public Task<ChangedInformationResultModel> DeleteСommunication(string username, string interectedUserName);
+        public Task<ChangedInformationResultModel> DeleteСommunicationAsync(string username, string interectedUserName);
 
     }
 }

@@ -128,14 +128,14 @@ namespace EvaSystem.Services
             }
         }
 
-        public async Task<ChangedInformationResultModel> DeleteUser(string username)
+        public async Task<ChangedInformationResultModel> DeleteUserAsync(string username)
         {
             var foundUser = await _userManager.FindByNameAsync(username);
    
 
             if (foundUser != null)
             {
-                await DeleteUserFromInterectedUsersTable(username);
+                await DeleteUserFromInterectedUsersTableAsync(username);
                 IdentityResult identityResult = await _userManager.DeleteAsync(foundUser);
                 return new ChangedInformationResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description) };
             }
@@ -145,34 +145,55 @@ namespace EvaSystem.Services
             }
         }
 
-        public async Task<ChangedInformationResultModel> AddСommunicationUsersAsync(string username, string[] interectedUserNames)
+        public async Task<ChangedInformationResultModel> AddСommunicationsBtwUsersAsync(string username, string[] interectedUsersName)
         {
             if(await _userManager.FindByNameAsync(username) == null)
             {
-                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "User does not exist" } };
+                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { $"User '{username}' does not exist" } };
             }
 
             List<InterectedUserModel> models = new List<InterectedUserModel>();
             List<string> errors = new List<string>();
 
-            foreach (var element in interectedUserNames)
+            foreach (var element in interectedUsersName)
             {
-
-                var newCommunicatation = new InterectedUserModel { UserName = username, InterectedUserName = element };
                 var existUser = await _userManager.FindByNameAsync(element);
 
-                if (!_dataContext.interectedUsers.Contains(newCommunicatation) && existUser != null)
+                //To do: add cheking element !=null
+
+                if(existUser!=null && element!=username)
                 {
-                    models.Add(newCommunicatation);
+                    var pk1 = (username + element).GetHashCode().ToString();
+                    var pk2 = (element + username).GetHashCode().ToString();
+
+                    var isContain = _dataContext.interectedUsers.SingleOrDefault(x => x.EntryHash == pk1);
+
+                    if (isContain == null)
+                    {
+                        var newCommunication1 = new InterectedUserModel { UserName = username, InterectedUserName = element, EntryHash = pk1 };
+                        var newCommunication2 = new InterectedUserModel { UserName = element, InterectedUserName = username, EntryHash = pk2 };
+                        models.Add(newCommunication1);
+                        models.Add(newCommunication2);
+                    }
+                    else
+                    {
+                        errors.Add($"Pair {username}:{element} / {element}:{username} already exist");
+                    }
+
                 }
-                else if (existUser == null)
-                {
-                    errors.Add($"{element} does not exist");
-                }
+
                 else
                 {
-                    errors.Add($"{newCommunicatation.UserName} : {newCommunicatation.InterectedUserName} - pair already exist");
+                    if(existUser == null)
+                    {
+                        errors.Add($"User '{element}' does not exist");
+                    }
+                    else
+                    {
+                        errors.Add($"The specified user names {username}:{element} match");
+                    }
                 }
+
             }
 
             if (models.Count > 0)
@@ -183,10 +204,10 @@ namespace EvaSystem.Services
 
             if (models.Count == 0)
             {
-                return new ChangedInformationResultModel { ErrorsMessages = new[] { "Specified communications already exist" }, Success = false };
+                return new ChangedInformationResultModel { ErrorsMessages = errors, Success = false };
             }
 
-            if (models.Count > 0 && models.Count < interectedUserNames.Length)
+            if (models.Count > 0 && models.Count < interectedUsersName.Length)
             {
                 return new ChangedInformationResultModel { ErrorsMessages = errors, Success = true };
             }
@@ -195,7 +216,7 @@ namespace EvaSystem.Services
 
         }
 
-        public async Task<List<InterectedUserResultModel>> GetInterectedUsers(string username)
+        public async Task<List<InterectedUserResultModel>> GetInterectedUsersAsync(string username)
         {
 
             List<InterectedUserResultModel> resultUsers = new List<InterectedUserResultModel>();
@@ -218,7 +239,7 @@ namespace EvaSystem.Services
             }
         }
 
-        public async Task<ChangedInformationResultModel> DeleteUserFromInterectedUsersTable(string username)
+        public async Task<ChangedInformationResultModel> DeleteUserFromInterectedUsersTableAsync(string username)
         {
             if(await _userManager.FindByNameAsync(username) == null)
             {
@@ -230,6 +251,11 @@ namespace EvaSystem.Services
             interectedUserModelsForDelete.AddRange(_dataContext.interectedUsers.Where(x => x.UserName == username));
             interectedUserModelsForDelete.AddRange(_dataContext.interectedUsers.Where(x => x.InterectedUserName == username));
 
+            if (interectedUserModelsForDelete.Count==0)
+            {
+                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "Communications does not exist" } };
+            }
+
             _dataContext.interectedUsers.RemoveRange(interectedUserModelsForDelete);
             await _dataContext.SaveChangesAsync();
 
@@ -237,17 +263,19 @@ namespace EvaSystem.Services
 
         }
 
-        public async Task<ChangedInformationResultModel> DeleteСommunication(string username,string interectedUserName)
+        public async Task<ChangedInformationResultModel> DeleteСommunicationAsync(string username,string interectedUserName)
         {
             if((await _userManager.FindByNameAsync(username) == null) || (await _userManager.FindByNameAsync(interectedUserName)==null))
             {
                 return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "User does not exist" } };
             }
 
-            var model1 = new InterectedUserModel { UserName = username, InterectedUserName = interectedUserName };
-            var model2 = new InterectedUserModel { UserName = interectedUserName, InterectedUserName = username };
+            var pk1 = (username + interectedUserName).GetHashCode().ToString();
+            var pk2 = (interectedUserName+ username).GetHashCode().ToString();
+            var model1 = new InterectedUserModel { UserName = username, InterectedUserName = interectedUserName, EntryHash = pk1 };
+            var model2 = new InterectedUserModel { UserName = interectedUserName, InterectedUserName = username, EntryHash = pk2 };
 
-            if (_dataContext.interectedUsers.SingleOrDefault(x=>x == model1)==null)
+            if (_dataContext.interectedUsers.SingleOrDefault(x => x == model1) == null)
             {
                 return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "Сommunication does not exist" } };
             }

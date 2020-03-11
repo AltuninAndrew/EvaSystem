@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace EvaSystem.Controllers
 {
-    public class ClientDataController:Controller
+    public class ClientDataController : Controller
     {
 
         private readonly IIdentityService _identityService;
@@ -27,13 +27,13 @@ namespace EvaSystem.Controllers
         public async Task<IActionResult> ChangePassword([FromRoute]string username, [FromBody]ClientChangePasswordRequest request)
         {
             var changeResponse = await _identityService.ChangePasswordAsync(username, request.OldPassword, request.NewPassword);
-            
+
 
             if (changeResponse.Success)
             {
                 return Ok("Password change is successful");
             }
-            else 
+            else
             {
                 return BadRequest(changeResponse.ErrorsMessages);
             }
@@ -44,15 +44,15 @@ namespace EvaSystem.Controllers
         public async Task<IActionResult> ChangeEmail([FromRoute]string username, [FromBody]ClientChangeEmailRequest request)
         {
             var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
-            
-            if(username != userNameFromJwt)
+
+            if (username != userNameFromJwt)
             {
                 return BadRequest("invalid token for the specified user name");
             }
 
             var changeResponse = await _identityService.ChangeEmailAsync(username, request.NewEmail, request.Password);
 
-            if(changeResponse.Success)
+            if (changeResponse.Success)
             {
                 return Ok("Email chage is successful");
             }
@@ -70,7 +70,7 @@ namespace EvaSystem.Controllers
         {
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
 
-            if(newPosition.Length <2)
+            if (newPosition.Length < 2)
             {
                 return BadRequest("Length should be more then 1 chars");
             }
@@ -104,7 +104,7 @@ namespace EvaSystem.Controllers
                 return BadRequest("No access");
             }
 
-            var changeResponse = await _identityService.DeleteUser(username);
+            var changeResponse = await _identityService.DeleteUserAsync(username);
 
             if (changeResponse.Success)
             {
@@ -115,6 +115,58 @@ namespace EvaSystem.Controllers
                 return BadRequest(changeResponse.ErrorsMessages);
             }
 
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost(ApiRoutes.ClientData.AddCommunicationBtwUsers)]
+        public async Task<IActionResult> AddCommunicationsBtwUsers([FromRoute] string username, string[] interectedUsersName)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return BadRequest("No access");
+            }
+
+            if(interectedUsersName.Length==0)
+            {
+                return BadRequest("Interected users name cannot be null");
+            }
+
+            var response = await _identityService.AddСommunicationsBtwUsersAsync(username, interectedUsersName);
+
+            if (response.Success == false)
+            {
+                return BadRequest(response.ErrorsMessages);
+            }
+
+            return Ok(response);
+
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet(ApiRoutes.ClientData.GetInterectedUsers)]
+        public async Task<IActionResult> GetInterectedUsers([FromRoute] string username)
+        {
+            var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (username == userNameFromJwt || userRole == "admin")
+            {
+                var result = await _identityService.GetInterectedUsersAsync(username);
+
+                if (result.Count == 0)
+                {
+                    return BadRequest("User not found or user have not interected users");
+                }
+
+                return Ok(result);
+
+            }
+            else
+            {
+                return BadRequest("No access");
+            }
         }
 
     }

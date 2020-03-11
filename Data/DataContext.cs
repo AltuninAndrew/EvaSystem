@@ -15,11 +15,5 @@ namespace EvaSystem.Data
         }
 
         public DbSet<InterectedUserModel> interectedUsers { get; set; }
-
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.Entity<UserModel>().
-        //}
-
     }
 }

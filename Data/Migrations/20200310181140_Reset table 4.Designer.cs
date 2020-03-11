@@ -4,14 +4,16 @@ using EvaSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EvaSystem.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200310181140_Reset table 4")]
+    partial class Resettable4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,16 +23,13 @@ namespace EvaSystem.Data.Migrations
 
             modelBuilder.Entity("EvaSystem.Models.InterectedUserModel", b =>
                 {
-                    b.Property<string>("EntryHash")
+                    b.Property<string>("UserName")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("InterectedUserName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("EntryHash");
+                    b.HasKey("UserName");
 
                     b.ToTable("interectedUsers");
                 });

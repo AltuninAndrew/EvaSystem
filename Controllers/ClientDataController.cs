@@ -106,14 +106,13 @@ namespace EvaSystem.Controllers
 
             var changeResponse = await _identityService.DeleteUserAsync(username);
 
-            if (changeResponse.Success)
-            {
-                return Ok("User was successfully deleted");
-            }
-            else
+            if(!changeResponse.Success)
             {
                 return BadRequest(changeResponse.ErrorsMessages);
             }
+
+            return Ok("User was successfully deleted");
+
 
         }
 
@@ -153,20 +152,41 @@ namespace EvaSystem.Controllers
 
             if (username == userNameFromJwt || userRole == "admin")
             {
-                var result = await _identityService.GetInterectedUsersAsync(username);
+                var response = await _identityService.GetInterectedUsersAsync(username);
 
-                if (result.Count == 0)
+                if (response == null)
                 {
                     return BadRequest("User not found or user have not interected users");
                 }
 
-                return Ok(result);
+                return Ok(response);
 
             }
             else
             {
                 return BadRequest("No access");
             }
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete(ApiRoutes.ClientData.DeleteСommunicationBtwUsers)]
+        public async Task<IActionResult> DeleteСommunicationBtwUsers([FromRoute] string username, string interectedUserName)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return BadRequest("No access");
+            }
+
+            var response = await _identityService.DeleteСommunicationAsync(username, interectedUserName);
+
+            if(!response.Success)
+            {
+                return BadRequest(response.ErrorsMessages);
+            }
+
+            return Ok("User communication was successfully deleted");
         }
 
     }

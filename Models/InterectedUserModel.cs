@@ -6,7 +6,7 @@ namespace EvaSystem.Models
     public class InterectedUserModel
     {
         [Key]
-        public string EntryHash { get; set; }
+        public string EntryHash { get; set; } //костыль!
 
         public string UserName { get; set; }
 

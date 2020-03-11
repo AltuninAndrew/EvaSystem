@@ -2,6 +2,7 @@
 using EvaSystem.Models;
 using EvaSystem.Options;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -163,10 +164,12 @@ namespace EvaSystem.Services
 
                 if(existUser!=null && element!=username)
                 {
-                    var pk1 = (username + element).GetHashCode().ToString();
-                    var pk2 = (element + username).GetHashCode().ToString();
 
-                    var isContain = _dataContext.interectedUsers.SingleOrDefault(x => x.EntryHash == pk1);
+
+                    var pk1 = element + username; //костыль!
+                    var pk2 = username + element; //костыль!
+
+                    var isContain = await _dataContext.interectedUsers.SingleOrDefaultAsync(x => x.EntryHash == pk1);
 
                     if (isContain == null)
                     {
@@ -218,6 +221,10 @@ namespace EvaSystem.Services
 
         public async Task<List<InterectedUserResultModel>> GetInterectedUsersAsync(string username)
         {
+            if(await _userManager.FindByNameAsync(username) == null)
+            {
+                return null;
+            }
 
             List<InterectedUserResultModel> resultUsers = new List<InterectedUserResultModel>();
 
@@ -226,7 +233,11 @@ namespace EvaSystem.Services
             foreach (var elemet in interectedUsers)
             {
                 var userModel = await _userManager.FindByNameAsync(elemet.InterectedUserName);
-                resultUsers.Add(new InterectedUserResultModel { FirstName = userModel.FirstName, LastName = userModel.LastName, Position = userModel.Position });
+
+                if(userModel!=null)
+                {
+                    resultUsers.Add(new InterectedUserResultModel { FirstName = userModel.FirstName, LastName = userModel.LastName, Position = userModel.Position });
+                }
             }
 
             if (resultUsers.Count > 0)
@@ -270,21 +281,26 @@ namespace EvaSystem.Services
                 return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "User does not exist" } };
             }
 
-            var pk1 = (username + interectedUserName).GetHashCode().ToString();
-            var pk2 = (interectedUserName+ username).GetHashCode().ToString();
-            var model1 = new InterectedUserModel { UserName = username, InterectedUserName = interectedUserName, EntryHash = pk1 };
-            var model2 = new InterectedUserModel { UserName = interectedUserName, InterectedUserName = username, EntryHash = pk2 };
+            var pk1 = username + interectedUserName; //костыль!
+            var pk2 = interectedUserName + username; //костыль!
 
-            if (_dataContext.interectedUsers.SingleOrDefault(x => x == model1) == null)
+
+            var isContain = await _dataContext.interectedUsers.AsNoTracking().SingleOrDefaultAsync(x => x.EntryHash == pk1);
+
+            if (isContain != null)
+            {
+                var model1 = new InterectedUserModel { UserName = username, InterectedUserName = interectedUserName, EntryHash = pk1 };
+                var model2 = new InterectedUserModel { UserName = interectedUserName, InterectedUserName = username, EntryHash = pk2 };
+                _dataContext.interectedUsers.Remove(model1);
+                _dataContext.interectedUsers.Remove(model2);
+
+            }
+            else
             {
                 return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "Сommunication does not exist" } };
             }
 
-            _dataContext.interectedUsers.Remove(model1);
-            _dataContext.interectedUsers.Remove(model2);
-
             await _dataContext.SaveChangesAsync();
-
             return new ChangedInformationResultModel { Success = true };
 
         }

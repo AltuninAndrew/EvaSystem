@@ -47,7 +47,7 @@ namespace EvaSystem.Controllers
 
             if (username != userNameFromJwt)
             {
-                return BadRequest("invalid token for the specified user name");
+                return Forbid();
             }
 
             var changeResponse = await _identityService.ChangeEmailAsync(username, request.NewEmail, request.Password);
@@ -63,7 +63,6 @@ namespace EvaSystem.Controllers
 
         }
 
-
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut(ApiRoutes.ClientData.ChangePosition)]
         public async Task<IActionResult> ChangePosition([FromRoute]string username, string newPosition)
@@ -77,7 +76,7 @@ namespace EvaSystem.Controllers
 
             if (userRole != "admin")
             {
-                return BadRequest("No access");
+                return Forbid();
             }
 
             var changeResponse = await _identityService.ChangePositionAsync(username, newPosition);
@@ -101,7 +100,7 @@ namespace EvaSystem.Controllers
 
             if (userRole != "admin")
             {
-                return BadRequest("No access");
+                return Forbid();
             }
 
             var changeResponse = await _identityService.DeleteUserAsync(username);
@@ -124,7 +123,7 @@ namespace EvaSystem.Controllers
 
             if (userRole != "admin")
             {
-                return BadRequest("No access");
+                return Forbid();
             }
 
             if(interectedUsersName.Length==0)
@@ -164,7 +163,7 @@ namespace EvaSystem.Controllers
             }
             else
             {
-                return BadRequest("No access");
+                return Forbid();
             }
         }
 
@@ -176,7 +175,7 @@ namespace EvaSystem.Controllers
 
             if (userRole != "admin")
             {
-                return BadRequest("No access");
+                return Forbid();
             }
 
             var response = await _identityService.DeleteСommunicationAsync(username, interectedUserName);
@@ -189,5 +188,26 @@ namespace EvaSystem.Controllers
             return Ok("User communication was successfully deleted");
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete(ApiRoutes.ClientData.DeleteUserFromInterectedUsersTable)]
+        public async Task<IActionResult> DeleteUserFromInterectedUsersTable([FromRoute] string username)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return Forbid();
+            }
+
+            var response = await _identityService.DeleteUserFromInterectedUsersTableAsync(username);
+
+            if (!response.Success)
+            {
+                return BadRequest(response.ErrorsMessages);
+            }
+
+            return Ok("User was successfully deleted from interected users table");
+
+        }
     }
 }

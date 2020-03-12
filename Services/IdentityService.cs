@@ -80,6 +80,19 @@ namespace EvaSystem.Services
   
         }
 
+        public async Task<List<ResponseUserModel>> GetAllUsersInSystemAsync()
+        {
+            var result = _userManager.Users.Select(x => new ResponseUserModel
+            {
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                Position = x.Position,
+                Email = x.Email
+            });
+
+            return await result.ToListAsync();
+        }
+
         public async Task<ChangedInformationResultModel> ChangePasswordAsync(string username,string oldPassword, string newPassword)
         {
             var foundUser = await _userManager.FindByNameAsync(username);
@@ -219,14 +232,14 @@ namespace EvaSystem.Services
 
         }
 
-        public async Task<List<InterectedUserResultModel>> GetInterectedUsersAsync(string username)
+        public async Task<List<ResponseUserModel>> GetInterectedUsersAsync(string username)
         {
             if(await _userManager.FindByNameAsync(username) == null)
             {
                 return null;
             }
 
-            List<InterectedUserResultModel> resultUsers = new List<InterectedUserResultModel>();
+            List<ResponseUserModel> resultUsers = new List<ResponseUserModel>();
 
             var interectedUsers = _dataContext.interectedUsers.Where(x => x.UserName == username).ToList();
 
@@ -236,7 +249,11 @@ namespace EvaSystem.Services
 
                 if(userModel!=null)
                 {
-                    resultUsers.Add(new InterectedUserResultModel { FirstName = userModel.FirstName, LastName = userModel.LastName, Position = userModel.Position });
+                    resultUsers.Add(new ResponseUserModel { 
+                        FirstName = userModel.FirstName,
+                        LastName = userModel.LastName, 
+                        Position = userModel.Position, 
+                        Email = userModel.Email });
                 }
             }
 

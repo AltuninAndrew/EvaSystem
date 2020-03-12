@@ -13,7 +13,9 @@
             public const string Login = "api/identity/login";
             public const string RegisterAdmin = "api/identity/admin_register";
             public const string RegisterClient = "api/identity/client_register";
-           
+            public const string GettAllUsers = "api/identity/get_all_users";
+
+
         }
 
         public static class ClientData

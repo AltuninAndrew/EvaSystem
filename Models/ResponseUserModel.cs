@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 
 namespace EvaSystem.Models
 {
-    public class InterectedUserResultModel
+    public class ResponseUserModel
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Position { get; set; }
+        public string Email { get; set; }
     }
 }

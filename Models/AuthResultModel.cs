@@ -10,9 +10,10 @@ namespace EvaSystem.Models
         public string Token { get; set; }
         public bool Success { get; set; }
         public string UserFirstName { get; set; }
+        public string UserMiddleName { get; set; }
         public string UserLastName { get; set; }
         public string UserPosition { get; set; }
-
+    
         public IEnumerable<string> ErrorsMessages { get; set; }
 
     }

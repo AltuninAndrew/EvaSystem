@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,7 +28,7 @@ namespace EvaSystem.Services
             _dataContext = dataContext;
         }
 
-        public async Task<AuthResultModel> RegisterAsync(string email, string firstName, string lastName, string password, string role,string position)
+        public async Task<AuthResultModel> RegisterAsync(string email, string firstName, string lastName, string middleName, string password, string role,string position)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
 
@@ -45,8 +43,8 @@ namespace EvaSystem.Services
                     Role = role,
                     FirstName = firstName,
                     LastName = lastName,
-                    Position = position
-                    
+                    Position = position,
+                    MiddleName = middleName
                 };
            
                 var createdUser = await _userManager.CreateAsync(newUser,password);
@@ -87,6 +85,7 @@ namespace EvaSystem.Services
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 Position = x.Position,
+                MiddleName = x.MiddleName,
                 Email = x.Email
             });
 
@@ -251,7 +250,8 @@ namespace EvaSystem.Services
                 {
                     resultUsers.Add(new ResponseUserModel { 
                         FirstName = userModel.FirstName,
-                        LastName = userModel.LastName, 
+                        LastName = userModel.LastName,
+                        MiddleName = userModel.MiddleName,
                         Position = userModel.Position, 
                         Email = userModel.Email });
                 }
@@ -344,11 +344,15 @@ namespace EvaSystem.Services
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return new AuthResultModel { Token = tokenHandler.WriteToken(token), Success = true, UserFirstName = userModel.FirstName,
-            UserLastName = userModel.LastName, UserPosition = userModel.Position};
-        }
-
-       
+            return new AuthResultModel 
+            { 
+                Token = tokenHandler.WriteToken(token), 
+                Success = true, 
+                UserFirstName = userModel.FirstName,            
+                UserLastName = userModel.LastName,
+                UserMiddleName=userModel.MiddleName,
+                UserPosition = userModel.Position};
+            }
 
     }
 }

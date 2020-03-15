@@ -14,13 +14,15 @@ namespace EvaSystem.Contracts.Requests
         [MaxLength(50,ErrorMessage = "Firs name lenght should be less then 50 char")]
         public string FirstName { get; set; }
 
+        [MinLength(2, ErrorMessage = "Middle name lenght should be more then 1 chars")]
+        [MaxLength(50, ErrorMessage = "Middle name lenght should be less then 50 char")]
+        public string MiddleName { get; set; }
+
         [MinLength(2, ErrorMessage = "Last name lenght should be more then 1 chars")]
         [MaxLength(50, ErrorMessage = "Last name lenght should be less then 50 char")]
         public string LastName { get; set; }
 
         [MinLength(2, ErrorMessage ="Length should be more then 1 chars")]
         public string Position { get; set; }
-
-        //public string[] InterectedUserNames { get; set; }
     }
 }

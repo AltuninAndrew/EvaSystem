@@ -31,7 +31,13 @@ namespace EvaSystem.Controllers
             }
 
             
-            var authResponse = await _identityService.RegisterAsync(request.Email,request.FirstName,request.LastName, request.Password, "admin",
+            var authResponse = await _identityService.RegisterAsync(
+                request.Email,
+                request.FirstName,
+                request.LastName,
+                request.MiddleName,
+                request.Password, 
+                "admin",
                 request.Position);
 
             if(!authResponse.Success)
@@ -60,7 +66,13 @@ namespace EvaSystem.Controllers
                 return BadRequest(ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)));
             }
 
-            var authResponse = await _identityService.RegisterAsync(request.Email,request.FirstName,request.LastName,request.Password, "user",
+            var authResponse = await _identityService.RegisterAsync(
+                request.Email,
+                request.FirstName,
+                request.LastName,
+                request.MiddleName,
+                request.Password, 
+                "user",
                 request.Position);
 
 
@@ -85,9 +97,17 @@ namespace EvaSystem.Controllers
             return Ok(authResponse);
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet(ApiRoutes.Identity.GettAllUsers)]
         public async Task<IActionResult> GetAllUsers()
         {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return Forbid();
+            }
+
             var response = await _identityService.GetAllUsersInSystemAsync();
 
             if(response == null || response.Count==0)

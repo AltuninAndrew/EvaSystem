@@ -15,5 +15,6 @@ namespace EvaSystem.Data
         }
 
         public DbSet<InterectedUserModel> interectedUsers { get; set; }
+        public DbSet<PositionModel> Positions { get; set; }
     }
 }

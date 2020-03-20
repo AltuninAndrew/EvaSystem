@@ -4,14 +4,16 @@ using EvaSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EvaSystem.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200315212030_Edited UserModel another")]
+    partial class EditedUserModelanother
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,7 +39,7 @@ namespace EvaSystem.Data.Migrations
 
             modelBuilder.Entity("EvaSystem.Models.PositionModel", b =>
                 {
-                    b.Property<int>("PositionId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -45,7 +47,7 @@ namespace EvaSystem.Data.Migrations
                     b.Property<string>("PositionName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("PositionId");
+                    b.HasKey("Id");
 
                     b.ToTable("Positions");
                 });
@@ -101,8 +103,8 @@ namespace EvaSystem.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PositionId")
-                        .HasColumnType("int");
+                    b.Property<string>("PositionName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
@@ -126,8 +128,6 @@ namespace EvaSystem.Data.Migrations
                         .IsUnique()
                         .HasName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("PositionId");
 
                     b.ToTable("AspNetUsers");
                 });
@@ -265,15 +265,6 @@ namespace EvaSystem.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("EvaSystem.Models.UserModel", b =>
-                {
-                    b.HasOne("EvaSystem.Models.PositionModel", "Position")
-                        .WithMany()
-                        .HasForeignKey("PositionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

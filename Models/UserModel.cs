@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EvaSystem.Models
 {
@@ -8,6 +9,10 @@ namespace EvaSystem.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }
-        public string Position { get; set; }
+
+        public int PositionId { get; set; }
+
+        [ForeignKey(nameof(PositionId))]
+        public PositionModel Position { get; set; }
     }
 }

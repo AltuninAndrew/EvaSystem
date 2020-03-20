@@ -19,6 +19,7 @@ namespace EvaSystem.Services
         private readonly UserManager<UserModel> _userManager;
         private readonly JwtSettings _jwtSettings;
         private readonly DataContext _dataContext;
+        private PositionManager _positionManager;
 
         public IdentityService(UserManager<UserModel> userManager, JwtSettings jwtSettings,PasswordOptions passOptions,DataContext dataContext)
         { 
@@ -26,46 +27,48 @@ namespace EvaSystem.Services
             _jwtSettings = jwtSettings;
             _userManager.Options.Password = passOptions;
             _dataContext = dataContext;
+            _positionManager = new PositionManager(dataContext);
         }
 
         public async Task<AuthResultModel> RegisterAsync(string email, string firstName, string lastName, string middleName, string password, string role,string position)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
 
-            if(existingUser == null)
+            if(existingUser!=null)
             {
-                var userName = email.Substring(0,email.LastIndexOf('@'));
-
-                var newUser = new UserModel
-                {
-                    Email = email,
-                    UserName = userName,
-                    Role = role,
-                    FirstName = firstName,
-                    LastName = lastName,
-                    Position = position,
-                    MiddleName = middleName
-                };
-           
-                var createdUser = await _userManager.CreateAsync(newUser,password);
-
-                if(!createdUser.Succeeded)
-                {
-                    return new AuthResultModel { Success = false, ErrorsMessages = createdUser.Errors.Select(x => x.Description) };
-                }
-
-                return GenerateAuthResultForUser(newUser);
-              
+                 return new AuthResultModel { Success = false, ErrorsMessages = new[] { "User with this email addres already exist" } };
             }
-            else
+
+
+
+            var userName = email.Substring(0, email.LastIndexOf('@'));
+
+            var newUser = new UserModel
             {
-                return new AuthResultModel { Success = false, ErrorsMessages = new[] { "User with this email addres already exist" } };
+                Email = email,
+                UserName = userName,
+                Role = role,
+                FirstName = firstName,
+                LastName = lastName,
+                Position = await _positionManager.AddNewPositionAsync(position),
+                MiddleName = middleName
+            };
+
+            var createdUser = await _userManager.CreateAsync(newUser, password);
+
+            if (!createdUser.Succeeded)
+            {
+                return new AuthResultModel { Success = false, ErrorsMessages = createdUser.Errors.Select(x => x.Description) };
             }
+
+            return GenerateAuthResultForUser(newUser);
+
         }
 
         public async Task<AuthResultModel> LoginAsync(string email, string password)
         {
-            var existingUser = await _userManager.FindByEmailAsync(email);
+            //var existingUser = await _userManager.FindByEmailAsync(email);
+            var existingUser = await _dataContext.Users.SingleOrDefaultAsync(x => x.Email == email);
 
             if (existingUser !=null && await _userManager.CheckPasswordAsync(existingUser,password))
             {
@@ -84,7 +87,7 @@ namespace EvaSystem.Services
             {
                 FirstName = x.FirstName,
                 LastName = x.LastName,
-                Position = x.Position,
+                Position = x.Position.PositionName,
                 MiddleName = x.MiddleName,
                 Email = x.Email
             });
@@ -131,7 +134,7 @@ namespace EvaSystem.Services
 
             if (foundUser != null)
             {
-                foundUser.Position = newPosition;
+                foundUser.Position =await _positionManager.AddNewPositionAsync(newPosition);
                 IdentityResult identityResult = await _userManager.UpdateAsync(foundUser);
                 return new ChangedInformationResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description) };
             }
@@ -252,7 +255,7 @@ namespace EvaSystem.Services
                         FirstName = userModel.FirstName,
                         LastName = userModel.LastName,
                         MiddleName = userModel.MiddleName,
-                        Position = userModel.Position, 
+                        Position = _positionManager.GetPositionByIDAsync(userModel.PositionId).Result.PositionName,
                         Email = userModel.Email });
                 }
             }
@@ -344,15 +347,16 @@ namespace EvaSystem.Services
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return new AuthResultModel 
-            { 
-                Token = tokenHandler.WriteToken(token), 
-                Success = true, 
-                UserFirstName = userModel.FirstName,            
+            return new AuthResultModel
+            {
+                Token = tokenHandler.WriteToken(token),
+                Success = true,
+                UserFirstName = userModel.FirstName,
                 UserLastName = userModel.LastName,
-                UserMiddleName=userModel.MiddleName,
-                UserPosition = userModel.Position};
-            }
+                UserMiddleName = userModel.MiddleName,
+                UserPosition = _positionManager.GetPositionByIDAsync(userModel.PositionId).Result.PositionName
+            };
+        }
 
     }
 }

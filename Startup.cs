@@ -20,6 +20,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using EvaSystem.Services;
 using EvaSystem.Models;
+using EvaSystem.Services.Interfaces;
 
 namespace EvaSystem
 {
@@ -52,7 +53,8 @@ namespace EvaSystem
             services.AddSingleton(passwordRequireOptions);
 
             services.AddScoped<IIdentityService,IdentityService>();
-            
+            services.AddScoped<IClientDataService, ClientDataService>();
+
 
 
             services.AddAuthentication(x =>

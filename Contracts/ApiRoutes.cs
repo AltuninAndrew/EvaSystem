@@ -23,6 +23,9 @@
             public const string ChangePassword = "api/ClientData/change_password/{username}";
             public const string ChangeEmail = "api/ClientData/change_email/{username}";
             public const string ChangePosition = "api/ClientData/change_position/{username}";
+            public const string ChangeFirstName = "api/ClientData/change_first_name/{username}";
+            public const string ChangeMiddleName = "api/ClientData/change_middle_name/{username}";
+            public const string ChangeLastName = "api/ClientData/change_last_name/{username}";
             public const string DeleteUser = "api/ClientData/delete_user/{username}";
             public const string AddCommunicationBtwUsers = "api/ClientData/add_interected_users/{username}";
             public const string GetInterectedUsers = "api/ClientData/get_interected_users/{username}";

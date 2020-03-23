@@ -1,6 +1,7 @@
 ﻿using EvaSystem.Contracts;
 using EvaSystem.Contracts.Requests;
 using EvaSystem.Services;
+using EvaSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,51 +16,38 @@ namespace EvaSystem.Controllers
     public class ClientDataController : Controller
     {
 
-        private readonly IIdentityService _identityService;
+        private readonly IClientDataService _clientDataService;
 
-        public ClientDataController(IIdentityService identityService)
+        public ClientDataController(IClientDataService clientDataService)
         {
-            _identityService = identityService;
-        }
-
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpPut(ApiRoutes.ClientData.ChangePassword)]
-        public async Task<IActionResult> ChangePassword([FromRoute]string username, [FromBody]ClientChangePasswordRequest request)
-        {
-            var changeResponse = await _identityService.ChangePasswordAsync(username, request.OldPassword, request.NewPassword);
-
-
-            if (changeResponse.Success)
-            {
-                return Ok("Password change is successful");
-            }
-            else
-            {
-                return BadRequest(changeResponse.ErrorsMessages);
-            }
+            _clientDataService = clientDataService;
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut(ApiRoutes.ClientData.ChangeEmail)]
         public async Task<IActionResult> ChangeEmail([FromRoute]string username, [FromBody]ClientChangeEmailRequest request)
         {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
             var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
 
-            if (username != userNameFromJwt)
+            if(userNameFromJwt == username || userRole == "admin")
+            {
+                var changeResponse = await _clientDataService.ChangeEmailAsync(username, request.NewEmail);
+
+                if(!changeResponse.Success)
+                {
+                    return BadRequest(changeResponse.ErrorsMessages);
+                }
+
+                return Ok("Email chage is successful");
+
+
+            }
+            else
             {
                 return Forbid();
             }
 
-            var changeResponse = await _identityService.ChangeEmailAsync(username, request.NewEmail, request.Password);
-
-            if (changeResponse.Success)
-            {
-                return Ok("Email chage is successful");
-            }
-            else
-            {
-                return BadRequest(changeResponse.ErrorsMessages);
-            }
 
         }
 
@@ -79,7 +67,7 @@ namespace EvaSystem.Controllers
                 return Forbid();
             }
 
-            var changeResponse = await _identityService.ChangePositionAsync(username, newPosition);
+            var changeResponse = await _clientDataService.ChangePositionAsync(username, newPosition);
 
             if (changeResponse.Success)
             {
@@ -88,6 +76,99 @@ namespace EvaSystem.Controllers
             else
             {
                 return BadRequest(changeResponse.ErrorsMessages);
+            }
+
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut(ApiRoutes.ClientData.ChangeFirstName)]
+        public async Task<IActionResult> ChangeFirstName([FromRoute]string username, string newFirstName)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+            var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
+
+            if (newFirstName.Length < 2)
+            {
+                return BadRequest("Length should be more then 1 chars");
+            }
+
+            if(userRole == "admin" || userNameFromJwt == "username")
+            {
+                var changeResponse = await _clientDataService.ChangeFirstNameAsync(username, newFirstName);
+
+                if (!changeResponse.Success)
+                {
+                    return BadRequest(changeResponse.ErrorsMessages);
+                }
+
+                return Ok("First name was successfully change");
+
+            }
+            else
+            {
+                return Forbid();
+            }
+
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut(ApiRoutes.ClientData.ChangeMiddleName)]
+        public async Task<IActionResult> ChangeMiddleName([FromRoute]string username, string newMiddleName)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+            var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
+
+            if (newMiddleName.Length < 2)
+            {
+                return BadRequest("Length should be more then 1 chars");
+            }
+
+            if (userRole == "admin" || userNameFromJwt == "username")
+            {
+                var changeResponse = await _clientDataService.ChangeMiddleNameAsync(username, newMiddleName);
+
+                if (!changeResponse.Success)
+                {
+                    return BadRequest(changeResponse.ErrorsMessages);
+                }
+
+                return Ok("Middle name was successfully change");
+
+            }
+            else
+            {
+                return Forbid();
+            }
+
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut(ApiRoutes.ClientData.ChangeLastName)]
+        public async Task<IActionResult> ChangeLastName([FromRoute]string username, string newLastName)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+            var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
+
+            if (newLastName.Length < 2)
+            {
+                return BadRequest("Length should be more then 1 chars");
+            }
+
+            if (userRole == "admin" || userNameFromJwt == "username")
+            {
+                var changeResponse = await _clientDataService.ChangeLastNameAsync(username, newLastName);
+
+                if (!changeResponse.Success)
+                {
+                    return BadRequest(changeResponse.ErrorsMessages);
+                }
+
+                return Ok("Last name was successfully change");
+
+            }
+            else
+            {
+                return Forbid();
             }
 
         }
@@ -103,7 +184,7 @@ namespace EvaSystem.Controllers
                 return Forbid();
             }
 
-            var changeResponse = await _identityService.DeleteUserAsync(username);
+            var changeResponse = await _clientDataService.DeleteUserAsync(username);
 
             if(!changeResponse.Success)
             {
@@ -131,7 +212,7 @@ namespace EvaSystem.Controllers
                 return BadRequest("Interected users name cannot be null");
             }
 
-            var response = await _identityService.AddСommunicationsBtwUsersAsync(username, interectedUsersName);
+            var response = await _clientDataService.AddСommunicationsBtwUsersAsync(username, interectedUsersName);
 
             if (response.Success == false)
             {
@@ -151,7 +232,7 @@ namespace EvaSystem.Controllers
 
             if (username == userNameFromJwt || userRole == "admin")
             {
-                var response = await _identityService.GetInterectedUsersAsync(username);
+                var response = await _clientDataService.GetInterectedUsersAsync(username);
 
                 if (response == null)
                 {
@@ -178,7 +259,7 @@ namespace EvaSystem.Controllers
                 return Forbid();
             }
 
-            var response = await _identityService.DeleteСommunicationAsync(username, interectedUserName);
+            var response = await _clientDataService.DeleteСommunicationAsync(username, interectedUserName);
 
             if(!response.Success)
             {
@@ -199,7 +280,7 @@ namespace EvaSystem.Controllers
                 return Forbid();
             }
 
-            var response = await _identityService.DeleteUserFromInterectedUsersTableAsync(username);
+            var response = await _clientDataService.DeleteUserFromInterectedUsersTableAsync(username);
 
             if (!response.Success)
             {

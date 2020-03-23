@@ -98,6 +98,23 @@ namespace EvaSystem.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPut(ApiRoutes.ClientData.ChangePassword)]
+        public async Task<IActionResult> ChangePassword([FromRoute]string username, [FromBody]ClientChangePasswordRequest request)
+        {
+            var changeResponse = await _identityService.ChangePasswordAsync(username, request.OldPassword, request.NewPassword);
+
+
+            if (changeResponse.Success)
+            {
+                return Ok("Password change is successful");
+            }
+            else
+            {
+                return BadRequest(changeResponse.ErrorsMessages);
+            }
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet(ApiRoutes.Identity.GettAllUsers)]
         public async Task<IActionResult> GetAllUsers()
         {

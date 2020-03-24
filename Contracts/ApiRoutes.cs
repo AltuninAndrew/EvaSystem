@@ -2,19 +2,12 @@
 {
     public static class ApiRoutes
     {
-
-        public static class Test
-        {
-            public const string Value = "api/test";
-        }
-
         public static class Identity
         {
             public const string Login = "api/identity/login";
             public const string RegisterAdmin = "api/identity/admin_register";
             public const string RegisterClient = "api/identity/client_register";
             public const string GettAllUsers = "api/identity/get_all_users";
-
 
         }
 
@@ -31,6 +24,12 @@
             public const string GetInterectedUsers = "api/ClientData/get_interected_users/{username}";
             public const string DeleteСommunicationBtwUsers = "api/ClientData/delete_interected_users/{username}";
             public const string DeleteUserFromInterectedUsersTable = "api/ClientData/delete_all_communications/{username}";
+        }
+
+
+        public static class Evaluation
+        {
+            public const string AddCriterions = "api/Evaluation/add_criterions";
         }
     
     }

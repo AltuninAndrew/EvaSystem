@@ -4,14 +4,16 @@ using EvaSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EvaSystem.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200323140721_Added new tables")]
+    partial class Addednewtables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,16 +28,15 @@ namespace EvaSystem.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("CriterionName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CriterionId")
+                        .HasColumnType("int");
 
                     b.Property<int>("PositionId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("CriterionName", "PositionId");
+                    b.HasAlternateKey("CriterionId", "PositionId");
 
                     b.HasIndex("PositionId");
 
@@ -44,13 +45,18 @@ namespace EvaSystem.Data.Migrations
 
             modelBuilder.Entity("EvaSystem.Models.EvaluationСriterionModel", b =>
                 {
+                    b.Property<int>("CriterionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
                     b.Property<string>("CriterionName")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("Weight")
                         .HasColumnType("real");
 
-                    b.HasKey("CriterionName");
+                    b.HasKey("CriterionId");
 
                     b.ToTable("Criterions");
                 });
@@ -93,8 +99,8 @@ namespace EvaSystem.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("CriterionName")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("CriterionId")
+                        .HasColumnType("int");
 
                     b.Property<float>("Score")
                         .HasColumnType("real");
@@ -104,7 +110,7 @@ namespace EvaSystem.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CriterionName");
+                    b.HasIndex("CriterionId");
 
                     b.ToTable("Scores");
                 });
@@ -330,7 +336,7 @@ namespace EvaSystem.Data.Migrations
                 {
                     b.HasOne("EvaSystem.Models.EvaluationСriterionModel", "Criterion")
                         .WithMany()
-                        .HasForeignKey("CriterionName")
+                        .HasForeignKey("CriterionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -345,7 +351,9 @@ namespace EvaSystem.Data.Migrations
                 {
                     b.HasOne("EvaSystem.Models.EvaluationСriterionModel", "Criterion")
                         .WithMany()
-                        .HasForeignKey("CriterionName");
+                        .HasForeignKey("CriterionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EvaSystem.Models.UserModel", b =>

@@ -1,12 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using EvaSystem.Data;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +10,6 @@ using Microsoft.Extensions.Hosting;
 using EvaSystem.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Configuration;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using EvaSystem.Services;
@@ -54,6 +48,7 @@ namespace EvaSystem
 
             services.AddScoped<IIdentityService,IdentityService>();
             services.AddScoped<IClientDataService, ClientDataService>();
+            services.AddScoped<IEvaluationService, EvaluationService>();
 
 
 

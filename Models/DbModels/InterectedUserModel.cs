@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-
 namespace EvaSystem.Models
 {
     public class InterectedUserModel
@@ -11,8 +10,6 @@ namespace EvaSystem.Models
         public string UserName { get; set; }
 
         public string InterectedUserName { get; set; }
-
-    
 
     }
 }

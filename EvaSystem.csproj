@@ -34,6 +34,10 @@
     <Compile Remove="Data\Migrations\20200310181009_Reset table 4.Designer.cs" />
     <Compile Remove="Data\Migrations\20200310185038_Reset table 7.cs" />
     <Compile Remove="Data\Migrations\20200310185038_Reset table 7.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200323121114_Added new table.cs" />
+    <Compile Remove="Data\Migrations\20200323121114_Added new table.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200323121912_Added new table.cs" />
+    <Compile Remove="Data\Migrations\20200323121912_Added new table.Designer.cs" />
   </ItemGroup>
 
 

@@ -4,56 +4,22 @@ using EvaSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EvaSystem.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200323123500_Deleted table evaluation criterion model")]
+    partial class Deletedtableevaluationcriterionmodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("EvaSystem.Models.CriterionToPositionModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CriterionName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("PositionId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasAlternateKey("CriterionName", "PositionId");
-
-                    b.HasIndex("PositionId");
-
-                    b.ToTable("CriterionsToPosition");
-                });
-
-            modelBuilder.Entity("EvaSystem.Models.EvaluationСriterionModel", b =>
-                {
-                    b.Property<string>("CriterionName")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<float>("Weight")
-                        .HasColumnType("real");
-
-                    b.HasKey("CriterionName");
-
-                    b.ToTable("Criterions");
-                });
 
             modelBuilder.Entity("EvaSystem.Models.InterectedUserModel", b =>
                 {
@@ -84,29 +50,6 @@ namespace EvaSystem.Data.Migrations
                     b.HasKey("PositionId");
 
                     b.ToTable("Positions");
-                });
-
-            modelBuilder.Entity("EvaSystem.Models.ScoreModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CriterionName")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<float>("Score")
-                        .HasColumnType("real");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CriterionName");
-
-                    b.ToTable("Scores");
                 });
 
             modelBuilder.Entity("EvaSystem.Models.UserModel", b =>
@@ -324,28 +267,6 @@ namespace EvaSystem.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("EvaSystem.Models.CriterionToPositionModel", b =>
-                {
-                    b.HasOne("EvaSystem.Models.EvaluationСriterionModel", "Criterion")
-                        .WithMany()
-                        .HasForeignKey("CriterionName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EvaSystem.Models.PositionModel", "Position")
-                        .WithMany()
-                        .HasForeignKey("PositionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EvaSystem.Models.ScoreModel", b =>
-                {
-                    b.HasOne("EvaSystem.Models.EvaluationСriterionModel", "Criterion")
-                        .WithMany()
-                        .HasForeignKey("CriterionName");
                 });
 
             modelBuilder.Entity("EvaSystem.Models.UserModel", b =>

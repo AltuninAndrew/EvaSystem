@@ -9,5 +9,9 @@ namespace EvaSystem.Services.Interfaces
     public interface IEvaluationService
     {
         public Task<ChangedInformationResultModel> AddCriterionsAsync(string positionName, CriterionModel[] criterions);
+
+        public Task<List<CriterionModel>> GetCriterionsAsync(string positionName);
+
+        public Task<List<CriterionModel>> GetCriterionsForUserAsync(string username);
     }
 }

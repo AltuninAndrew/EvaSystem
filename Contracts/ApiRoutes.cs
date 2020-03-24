@@ -30,6 +30,8 @@
         public static class Evaluation
         {
             public const string AddCriterions = "api/Evaluation/add_criterions";
+            public const string GetCriterions = "api/Evaluation/get_criterions/{positionName}";
+            public const string GetCriterionsForUser = "api/Evaluation/get_criterions_for_user/{username}";
         }
     
     }

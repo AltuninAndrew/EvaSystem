@@ -38,5 +38,35 @@ namespace EvaSystem.Controllers
             return Ok(response);
         }
 
+        [HttpGet(ApiRoutes.Evaluation.GetCriterions)]
+        public async Task<IActionResult> GetCriterions([FromRoute]string positionName)
+        {
+            var response = await _evaluationService.GetCriterionsAsync(positionName);
+
+            if(response == null)
+            {
+                return BadRequest("Position not found");
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet(ApiRoutes.Evaluation.GetCriterionsForUser)]
+        public async Task<IActionResult> GetCriterionsForUser([FromRoute]string username)
+        {
+            var response = await _evaluationService.GetCriterionsForUserAsync(username);
+
+            if (response == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            if(response.Count == 0)
+            {
+                return BadRequest("User has not criterions");
+            }
+
+            return Ok(response);
+        }
     }
 }

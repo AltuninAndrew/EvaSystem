@@ -103,5 +103,43 @@ namespace EvaSystem.Services
             return new ChangedInformationResultModel { Success = true, ErrorsMessages = errors };
         }
 
+        public async Task<List<CriterionModel>> GetCriterionsAsync(string positionName)
+        {
+            var foundPosition = await _positionManager.GetPositionByNameAsync(positionName);
+
+            if(foundPosition == null)
+            {
+                return null;
+            }
+
+            var criterions = await _dataContext.CriterionsToPosition.Where(x => x.Position.PositionName == positionName).ToListAsync();
+
+            return criterions.Select(x => new CriterionModel 
+            { 
+                Name = x.CriterionName, 
+                Weight = _dataContext.Criterions.FirstOrDefaultAsync(xx=>xx.CriterionName==x.CriterionName).Result.Weight
+            }).ToList();
+
+        }
+
+        public async Task<List<CriterionModel>> GetCriterionsForUserAsync(string username)
+        {
+            var foundUser = await _userManager.FindByNameAsync(username);
+
+            if(foundUser == null)
+            {
+                return null;
+            }
+
+            var criterions = await _dataContext.CriterionsToPosition.Where(x => x.PositionId == foundUser.PositionId).ToListAsync();
+
+            return criterions.Select(x => new CriterionModel
+            {
+                Name = x.CriterionName,
+                Weight = _dataContext.Criterions.FirstOrDefaultAsync(xx => xx.CriterionName == x.CriterionName).Result.Weight
+            }).ToList();
+
+
+        }
     }
 }

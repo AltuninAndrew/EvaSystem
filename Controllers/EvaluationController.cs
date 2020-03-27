@@ -23,6 +23,11 @@ namespace EvaSystem.Controllers
         [HttpPost(ApiRoutes.Evaluation.AddCriterions)]
         public async Task<IActionResult> AddCriterions(string positionName, [FromBody]CriterionModel[] request)
         {
+            if (request == null)
+            {
+                return BadRequest("Request model is not correct");
+            }
+
             var response = await _evaluationService.AddCriterionsAsync(positionName, request);
 
             if(string.IsNullOrEmpty(positionName))
@@ -67,6 +72,37 @@ namespace EvaSystem.Controllers
             }
 
             return Ok(response);
+        }
+
+        [HttpPost(ApiRoutes.Evaluation.RateUser)]
+        public async Task<IActionResult> RateUser([FromRoute]string username, [FromBody]ScorePerCriterionModel[] request)
+        {
+            if(request == null)
+            {
+                return BadRequest("Request model is not correct");
+            }
+
+            var response = await _evaluationService.RateUserAsync(username, request);
+
+            if(response.Success == false)
+            {
+                return BadRequest(response.ErrorsMessages);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet(ApiRoutes.Evaluation.GetRatingForUsers)]
+        public async Task<IActionResult> GetRatingForUser([FromRoute]string username)
+        {
+            var response = await _evaluationService.GetRatingAsync(username);
+
+            if(response == null)
+            {
+                return BadRequest("User not found or rating is empty");
+            }
+
+            return Ok(response);  
         }
     }
 }

@@ -21,14 +21,18 @@ namespace EvaSystem.Controllers
 
         [HttpPost(ApiRoutes.Identity.RegisterAdmin)]
         public async Task<IActionResult> RegisterAdmin([FromBody]ClientRegistrationRequest request)
-        { 
+        {
+            if (request == null)
+            {
+                return BadRequest("Request model is not correct");
+            }
 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState.Values.SelectMany(x => x.Errors.Select(xx => xx.ErrorMessage)));
             }
 
-            
+
             var authResponse = await _identityService.RegisterAsync(
                 request.Email,
                 request.FirstName,
@@ -51,6 +55,11 @@ namespace EvaSystem.Controllers
         [HttpPost(ApiRoutes.Identity.RegisterClient)]
         public async Task<IActionResult> RegisterClient([FromBody]ClientRegistrationRequest request)
         {
+            if (request == null)
+            {
+                return BadRequest("Request model is not correct");
+            }
+
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
 
             if (userRole != "admin")
@@ -85,6 +94,11 @@ namespace EvaSystem.Controllers
         [HttpPost(ApiRoutes.Identity.Login)]
         public async Task<IActionResult> Login([FromBody]ClientLoginRequest request)
         {
+            if (request == null)
+            {
+                return BadRequest("Request model is not correct");
+            }
+
             var authResponse = await _identityService.LoginAsync(request.Email, request.Password);
 
             if (!authResponse.Success)
@@ -99,8 +113,12 @@ namespace EvaSystem.Controllers
         [HttpPut(ApiRoutes.ClientData.ChangePassword)]
         public async Task<IActionResult> ChangePassword([FromRoute]string username, [FromBody]ClientChangePasswordRequest request)
         {
-            var changeResponse = await _identityService.ChangePasswordAsync(username, request.OldPassword, request.NewPassword);
+            if (request == null)
+            {
+                return BadRequest("Request model is not correct");
+            }
 
+            var changeResponse = await _identityService.ChangePasswordAsync(username, request.OldPassword, request.NewPassword);
 
             if (changeResponse.Success)
             {

@@ -23,6 +23,11 @@ namespace EvaSystem.Controllers
         [HttpPut(ApiRoutes.ClientData.ChangeEmail)]
         public async Task<IActionResult> ChangeEmail([FromRoute]string username, [FromBody]ClientChangeEmailRequest request)
         {
+            if (request == null)
+            {
+                return BadRequest("Request model is not correct");
+            }
+
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
             var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
 
@@ -51,6 +56,11 @@ namespace EvaSystem.Controllers
         [HttpPut(ApiRoutes.ClientData.ChangePosition)]
         public async Task<IActionResult> ChangePosition([FromRoute]string username, string newPosition)
         {
+            if (string.IsNullOrEmpty(newPosition))
+            {
+                return BadRequest("Request model is not correct");
+            }
+
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
 
             if (newPosition.Length < 2)
@@ -80,6 +90,11 @@ namespace EvaSystem.Controllers
         [HttpPut(ApiRoutes.ClientData.ChangeFirstName)]
         public async Task<IActionResult> ChangeFirstName([FromRoute]string username, string newFirstName)
         {
+            if (string.IsNullOrEmpty(newFirstName))
+            {
+                return BadRequest("Request model is not correct");
+            }
+
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
             var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
 
@@ -111,6 +126,11 @@ namespace EvaSystem.Controllers
         [HttpPut(ApiRoutes.ClientData.ChangeMiddleName)]
         public async Task<IActionResult> ChangeMiddleName([FromRoute]string username, string newMiddleName)
         {
+            if (string.IsNullOrEmpty(newMiddleName))
+            {
+                return BadRequest("Request model is not correct");
+            }
+
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
             var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
 
@@ -142,6 +162,11 @@ namespace EvaSystem.Controllers
         [HttpPut(ApiRoutes.ClientData.ChangeLastName)]
         public async Task<IActionResult> ChangeLastName([FromRoute]string username, string newLastName)
         {
+            if (string.IsNullOrEmpty(newLastName))
+            {
+                return BadRequest("Request model is not correct");
+            }
+
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
             var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
 
@@ -196,6 +221,11 @@ namespace EvaSystem.Controllers
         [HttpPost(ApiRoutes.ClientData.AddCommunicationBtwUsers)]
         public async Task<IActionResult> AddCommunicationsBtwUsers([FromRoute] string username, string[] interectedUsersName)
         {
+            if (interectedUsersName == null)
+            {
+                return BadRequest("Request model is not correct");
+            }
+
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
 
             if (userRole != "admin")
@@ -248,6 +278,11 @@ namespace EvaSystem.Controllers
         [HttpDelete(ApiRoutes.ClientData.DeleteСommunicationBtwUsers)]
         public async Task<IActionResult> DeleteСommunicationBtwUsers([FromRoute] string username, string interectedUserName)
         {
+            if (interectedUserName == null)
+            {
+                return BadRequest("Request model is not correct");
+            }
+
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
 
             if (userRole != "admin")

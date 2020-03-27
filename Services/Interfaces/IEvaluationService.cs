@@ -13,5 +13,9 @@ namespace EvaSystem.Services.Interfaces
         public Task<List<CriterionModel>> GetCriterionsAsync(string positionName);
 
         public Task<List<CriterionModel>> GetCriterionsForUserAsync(string username);
+
+        public Task<ChangedInformationResultModel> RateUserAsync(string username, ScorePerCriterionModel[] scores);
+
+        public Task<UserRatingInformationModel> GetRatingAsync(string username);
     }
 }

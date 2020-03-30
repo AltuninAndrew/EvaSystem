@@ -32,8 +32,10 @@
             public const string AddCriterions = "api/Evaluation/add_criterions";
             public const string GetCriterions = "api/Evaluation/get_criterions/{positionName}";
             public const string GetCriterionsForUser = "api/Evaluation/get_criterions_for_user/{username}";
+            public const string DeleteCriterionsForPos = "api/Evaluation/delete_criterions/{positionName}";
             public const string RateUser = "api/Evaluation/rate_user/{username}";
-            public const string GetRatingForUsers = "api/Evaluation/get_rating_for_user/{username}";
+            public const string GetUserRating = "api/Evaluation/get_user_rating/{username}";
+            public const string RemoveUserRating = "api/Evaluation/remove_user_rating/{username}";
         }
     
     }

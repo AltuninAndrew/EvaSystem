@@ -9,7 +9,10 @@ namespace EvaSystem.Models
 {
     public class ScoreModel
     {
-        public string UserName { get; set; }
+        public string UserId { get; set; }
+
+        [ForeignKey(nameof(UserId))]
+        public UserModel User { get; set; }
 
         public string CriterionName { get; set; }
 

@@ -53,6 +53,11 @@ namespace EvaSystem.Controllers
                 return BadRequest("Position not found");
             }
 
+            if (response.Count == 0)
+            {
+                return BadRequest("Position has not criterions");
+            }
+
             return Ok(response);
         }
 
@@ -74,6 +79,25 @@ namespace EvaSystem.Controllers
             return Ok(response);
         }
 
+        [HttpDelete(ApiRoutes.Evaluation.DeleteCriterionsForPos)]
+        public async Task<IActionResult> DeleteCriterionsForPos([FromRoute]string positionName, string[] criterionNames)
+        {
+            if (criterionNames == null)
+            {
+                return BadRequest("Request model is not correct");
+            }
+
+            var response = await _evaluationService.DeleteCriterionsToPosition(positionName, criterionNames);
+
+            if(response.Success == false)
+            {
+                return BadRequest(response.ErrorsMessages);
+            }
+
+            return Ok(response);
+
+        }
+
         [HttpPost(ApiRoutes.Evaluation.RateUser)]
         public async Task<IActionResult> RateUser([FromRoute]string username, [FromBody]ScorePerCriterionModel[] request)
         {
@@ -92,17 +116,36 @@ namespace EvaSystem.Controllers
             return Ok(response);
         }
 
-        [HttpGet(ApiRoutes.Evaluation.GetRatingForUsers)]
-        public async Task<IActionResult> GetRatingForUser([FromRoute]string username)
+        [HttpGet(ApiRoutes.Evaluation.GetUserRating)]
+        public async Task<IActionResult> GetUserRating([FromRoute]string username)
         {
-            var response = await _evaluationService.GetRatingAsync(username);
+            var response = await _evaluationService.GetUserRatingAsync(username);
 
             if(response == null)
             {
-                return BadRequest("User not found or rating is empty");
+                return BadRequest("Rating is empty or user not found");
             }
 
             return Ok(response);  
+        }
+
+        [HttpDelete(ApiRoutes.Evaluation.RemoveUserRating)]
+        public async Task<IActionResult> RemoveUserRating([FromRoute]string username, string[] criterionNames)
+        {
+            if (criterionNames == null)
+            {
+                return BadRequest("Request model is not correct");
+            }
+
+            var response = await _evaluationService.RemoveUserRatingAsync(username, criterionNames);
+
+            if(response.Success == false)
+            {
+                return BadRequest(response.ErrorsMessages);
+            }
+
+            return Ok(response);
+
         }
     }
 }

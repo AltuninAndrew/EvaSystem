@@ -38,6 +38,10 @@
     <Compile Remove="Data\Migrations\20200323121114_Added new table.Designer.cs" />
     <Compile Remove="Data\Migrations\20200323121912_Added new table.cs" />
     <Compile Remove="Data\Migrations\20200323121912_Added new table.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200330090736_Update score table.cs" />
+    <Compile Remove="Data\Migrations\20200330090736_Update score table.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200330110156_Update score table.cs" />
+    <Compile Remove="Data\Migrations\20200330110156_Update score table.Designer.cs" />
   </ItemGroup>
 
 

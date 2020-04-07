@@ -1,6 +1,7 @@
 ﻿using EvaSystem.Data;
 using EvaSystem.Models;
 using EvaSystem.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace EvaSystem.Services
         private readonly UserManager<UserModel> _userManager;
         private readonly DataContext _dataContext;
         private PositionManager _positionManager;
+
+        private const float MaxAvatarImageWeightKB = 1024;
 
         public ClientDataService(UserManager<UserModel> userManager, DataContext dataContext)
         {
@@ -102,6 +105,48 @@ namespace EvaSystem.Services
             {
                 return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "User not found" } };
             }
+        }
+
+        public async Task<ChangedInformationResultModel> AddAvatarToUserAsync(string username, byte[] image)
+        {
+            if((image.Length/1024)>MaxAvatarImageWeightKB)
+            {
+                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "Image is too large" } };
+            }
+
+            var foundUser = await _userManager.FindByNameAsync(username);
+
+            if(foundUser == null)
+            {
+                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "User not found" } };
+            }
+
+            foundUser.AvatarImage = image;
+
+            IdentityResult identityResult = await _userManager.UpdateAsync(foundUser);
+            return new ChangedInformationResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description) };
+        }
+
+        public async Task<ChangedInformationResultModel> RemoveUserAvatarAsync(string username)
+        {
+            var foundUser = await _userManager.FindByNameAsync(username);
+
+            if (foundUser == null)
+            {
+                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "User not found" } };
+            }
+
+            if(foundUser.AvatarImage !=null)
+            {
+                foundUser.AvatarImage = null;
+                IdentityResult identityResult = await _userManager.UpdateAsync(foundUser);
+                return new ChangedInformationResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description) };
+            }
+            else
+            {
+                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "The user's avatar was not found" } };
+            }
+
         }
 
         public async Task<ChangedInformationResultModel> DeleteUserAsync(string username)
@@ -217,7 +262,8 @@ namespace EvaSystem.Services
                         LastName = userModel.LastName,
                         MiddleName = userModel.MiddleName,
                         Position = _positionManager.GetPositionByIDAsync(userModel.PositionId).Result.PositionName,
-                        Email = userModel.Email
+                        Email = userModel.Email,
+                        AvatarImage = userModel.AvatarImage
                     });
                 }
             }

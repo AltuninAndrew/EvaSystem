@@ -9,6 +9,8 @@ namespace EvaSystem.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }
+        public byte[] AvatarImage { get; set; }
+
 
         public int PositionId { get; set; }
 

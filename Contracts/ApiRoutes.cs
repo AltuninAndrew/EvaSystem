@@ -7,7 +7,9 @@
             public const string Login = "api/identity/login";
             public const string RegisterAdmin = "api/identity/admin_register";
             public const string RegisterClient = "api/identity/client_register";
-            public const string GettAllUsers = "api/identity/get_all_users";
+            public const string GetAllUsers = "api/identity/get_all_users";
+            public const string GetUserInfo = "api/identity/get_user_info/{username}";
+
 
         }
 
@@ -19,6 +21,8 @@
             public const string ChangeFirstName = "api/ClientData/change_first_name/{username}";
             public const string ChangeMiddleName = "api/ClientData/change_middle_name/{username}";
             public const string ChangeLastName = "api/ClientData/change_last_name/{username}";
+            public const string AddUserAvatar = "api/ClientData/add_user_avatar/{username}";
+            public const string RemoveUserAvatar = "api/ClientData/remove_user_avatar/{username}";
             public const string DeleteUser = "api/ClientData/delete_user/{username}";
             public const string AddCommunicationBtwUsers = "api/ClientData/add_interected_users/{username}";
             public const string GetInterectedUsers = "api/ClientData/get_interected_users/{username}";

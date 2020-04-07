@@ -3,7 +3,9 @@ using EvaSystem.Contracts.Requests;
 using EvaSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,11 +15,13 @@ namespace EvaSystem.Controllers
     {
 
         private readonly IClientDataService _clientDataService;
+        private const float MaxImageWeghtKB = 1024;
 
         public ClientDataController(IClientDataService clientDataService)
         {
             _clientDataService = clientDataService;
         }
+
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut(ApiRoutes.ClientData.ChangeEmail)]
@@ -31,11 +35,11 @@ namespace EvaSystem.Controllers
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
             var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
 
-            if(userNameFromJwt == username || userRole == "admin")
+            if (userNameFromJwt == username || userRole == "admin")
             {
                 var changeResponse = await _clientDataService.ChangeEmailAsync(username, request.NewEmail);
 
-                if(!changeResponse.Success)
+                if (!changeResponse.Success)
                 {
                     return BadRequest(changeResponse.ErrorsMessages);
                 }
@@ -51,6 +55,7 @@ namespace EvaSystem.Controllers
 
 
         }
+
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut(ApiRoutes.ClientData.ChangePosition)]
@@ -86,6 +91,7 @@ namespace EvaSystem.Controllers
 
         }
 
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut(ApiRoutes.ClientData.ChangeFirstName)]
         public async Task<IActionResult> ChangeFirstName([FromRoute]string username, string newFirstName)
@@ -103,7 +109,7 @@ namespace EvaSystem.Controllers
                 return BadRequest("Length should be more then 1 chars");
             }
 
-            if(userRole == "admin" || userNameFromJwt == "username")
+            if (userRole == "admin" || userNameFromJwt == username)
             {
                 var changeResponse = await _clientDataService.ChangeFirstNameAsync(username, newFirstName);
 
@@ -122,6 +128,7 @@ namespace EvaSystem.Controllers
 
         }
 
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut(ApiRoutes.ClientData.ChangeMiddleName)]
         public async Task<IActionResult> ChangeMiddleName([FromRoute]string username, string newMiddleName)
@@ -139,7 +146,7 @@ namespace EvaSystem.Controllers
                 return BadRequest("Length should be more then 1 chars");
             }
 
-            if (userRole == "admin" || userNameFromJwt == "username")
+            if (userRole == "admin" || userNameFromJwt == username)
             {
                 var changeResponse = await _clientDataService.ChangeMiddleNameAsync(username, newMiddleName);
 
@@ -158,6 +165,7 @@ namespace EvaSystem.Controllers
 
         }
 
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut(ApiRoutes.ClientData.ChangeLastName)]
         public async Task<IActionResult> ChangeLastName([FromRoute]string username, string newLastName)
@@ -175,7 +183,7 @@ namespace EvaSystem.Controllers
                 return BadRequest("Length should be more then 1 chars");
             }
 
-            if (userRole == "admin" || userNameFromJwt == "username")
+            if (userRole == "admin" || userNameFromJwt == username)
             {
                 var changeResponse = await _clientDataService.ChangeLastNameAsync(username, newLastName);
 
@@ -193,6 +201,81 @@ namespace EvaSystem.Controllers
             }
 
         }
+
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost(ApiRoutes.ClientData.AddUserAvatar)]
+        public async Task<IActionResult> AddUserAvatar([FromRoute]string username, IFormFile userAvatarImage)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+            var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
+
+            if(userRole == "admin" || userNameFromJwt==username)
+            {
+                if (userAvatarImage == null)
+                {
+                    return BadRequest("File is null");
+                }
+
+                if (CheckImage(userAvatarImage) == false)
+                {
+                    return BadRequest("Image does not meet the conditions");
+                }
+
+
+                byte[] avatar = null;
+                using (var fs = userAvatarImage.OpenReadStream())
+                using (var ms = new MemoryStream())
+                {
+                    fs.CopyTo(ms);
+                    avatar = ms.ToArray();
+                }
+
+                var response = await _clientDataService.AddAvatarToUserAsync(username, avatar);
+
+                if(response.Success == false)
+                {
+                    return BadRequest(response.ErrorsMessages);
+                }
+
+                return Ok(response);
+
+            }
+            else
+            {
+                return Forbid();
+            }
+
+
+        }
+
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpDelete(ApiRoutes.ClientData.RemoveUserAvatar)]
+        public async Task<IActionResult> RemoveUserAvatar([FromRoute]string username)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+            var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
+
+            if (userRole == "admin" || userNameFromJwt == username)
+            {
+                var response = await _clientDataService.RemoveUserAvatarAsync(username);
+
+                if (response.Success == false)
+                {
+                    return BadRequest(response.ErrorsMessages);
+                }
+
+                return Ok(response);
+            }
+            else
+            {
+                return Forbid();
+            }
+
+
+        }
+
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete(ApiRoutes.ClientData.DeleteUser)]
@@ -216,6 +299,7 @@ namespace EvaSystem.Controllers
 
 
         }
+
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost(ApiRoutes.ClientData.AddCommunicationBtwUsers)]
@@ -249,6 +333,7 @@ namespace EvaSystem.Controllers
 
         }
 
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet(ApiRoutes.ClientData.GetInterectedUsers)]
         public async Task<IActionResult> GetInterectedUsers([FromRoute] string username)
@@ -273,6 +358,7 @@ namespace EvaSystem.Controllers
                 return Forbid();
             }
         }
+
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete(ApiRoutes.ClientData.DeleteСommunicationBtwUsers)]
@@ -300,6 +386,7 @@ namespace EvaSystem.Controllers
             return Ok("User communication was successfully deleted");
         }
 
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete(ApiRoutes.ClientData.DeleteUserFromInterectedUsersTable)]
         public async Task<IActionResult> DeleteUserFromInterectedUsersTable([FromRoute] string username)
@@ -321,5 +408,20 @@ namespace EvaSystem.Controllers
             return Ok("User was successfully deleted from interected users table");
 
         }
+
+
+        private bool CheckImage(IFormFile image)
+        {
+            if (((image.Length / 1024) <= MaxImageWeghtKB) && (image.ContentType == "image/jpeg" || image.ContentType == "image/png"))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
     }
 }

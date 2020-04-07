@@ -12,5 +12,6 @@ namespace EvaSystem.Models
         public string LastName { get; set; }
         public string Position { get; set; }
         public string Email { get; set; }
+        public byte[] AvatarImage { get; set; }
     }
 }

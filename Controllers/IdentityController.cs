@@ -131,7 +131,7 @@ namespace EvaSystem.Controllers
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet(ApiRoutes.Identity.GettAllUsers)]
+        [HttpGet(ApiRoutes.Identity.GetAllUsers)]
         public async Task<IActionResult> GetAllUsers()
         {
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
@@ -149,6 +149,33 @@ namespace EvaSystem.Controllers
             }
 
             return Ok(response);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet(ApiRoutes.Identity.GetUserInfo)]
+        public async Task<IActionResult> GetUserInfo([FromRoute]string username)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+            var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
+
+            if (userRole == "admin" || userNameFromJwt == username)
+            {
+                var response = await _identityService.GetUserInfoAsync(username);
+
+                if(response == null)
+                {
+                    return BadRequest("User not found");
+                }
+
+                return Ok(response);
+
+            }
+            else
+            {
+                return Forbid();
+            }
+
+
         }
 
     }

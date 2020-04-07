@@ -12,6 +12,8 @@ namespace EvaSystem.Services
 
         public Task<ChangedInformationResultModel> ChangePasswordAsync(string username, string oldPassword, string newPassword);
 
+        public Task<ResponseUserModel> GetUserInfoAsync(string username);
+
         public Task<List<ResponseUserModel>> GetAllUsersInSystemAsync();
 
 

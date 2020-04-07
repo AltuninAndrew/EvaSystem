@@ -103,10 +103,35 @@ namespace EvaSystem.Services
                 LastName = x.LastName,
                 Position = x.Position.PositionName,
                 MiddleName = x.MiddleName,
-                Email = x.Email
+                Email = x.Email,
+                AvatarImage = x.AvatarImage
             });
 
             return await result.ToListAsync();
+        }
+
+        public async Task<ResponseUserModel> GetUserInfoAsync(string username)
+        {
+            var foundUser = await _dataContext.Users.Include(x => x.Position).FirstOrDefaultAsync(x => x.UserName == username);
+
+            if (foundUser != null)
+            {
+                var result = new ResponseUserModel
+                {
+                    FirstName = foundUser.FirstName,
+                    LastName = foundUser.LastName,
+                    Position = foundUser.Position.PositionName,
+                    MiddleName = foundUser.MiddleName,
+                    Email = foundUser.Email,
+                    AvatarImage = foundUser.AvatarImage
+                };
+
+                return result;
+            }else
+            {
+                return null;
+            }
+
         }
 
         private AuthResultModel GenerateAuthResultForUser(UserModel userModel)
@@ -138,7 +163,8 @@ namespace EvaSystem.Services
                 UserFirstName = userModel.FirstName,
                 UserLastName = userModel.LastName,
                 UserMiddleName = userModel.MiddleName,
-                UserPosition = _positionManager.GetPositionByIDAsync(userModel.PositionId).Result.PositionName
+                UserPosition = _positionManager.GetPositionByIDAsync(userModel.PositionId).Result.PositionName,
+                AvatarImage = userModel.AvatarImage
             };
         }
 

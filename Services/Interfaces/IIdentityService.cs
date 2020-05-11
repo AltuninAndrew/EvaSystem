@@ -6,7 +6,7 @@ namespace EvaSystem.Services
 {
     public interface IIdentityService
     {
-        public Task<AuthResultModel> RegisterAsync(string email, string firstName, string lastName,string middleName, string password, string role, string position);
+        public Task<ChangedInformationResultModel> RegisterAsync(string email, string firstName, string lastName,string middleName, string password, string role, string position);
 
         public Task<AuthResultModel> LoginAsync(string email, string password);
 
@@ -15,7 +15,6 @@ namespace EvaSystem.Services
         public Task<ResponseUserModel> GetUserInfoAsync(string username);
 
         public Task<List<ResponseUserModel>> GetAllUsersInSystemAsync();
-
 
     }
 }

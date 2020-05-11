@@ -14,6 +14,8 @@ namespace EvaSystem.Models
         public string UserLastName { get; set; }
         public string UserPosition { get; set; }
         public byte[] AvatarImage { get; set; }
+        public string UserRole { get; set; }
+        public string Username { get; set; }
     
         public IEnumerable<string> ErrorsMessages { get; set; }
 

@@ -178,5 +178,16 @@ namespace EvaSystem.Controllers
 
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet(ApiRoutes.Identity.CheckJWT)]
+        public IActionResult CheckJWT()
+        {
+            var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
+
+            var response = new { tokenActive = true, userName = userNameFromJwt};
+
+            return Ok(response);
+        }
+
     }
 }

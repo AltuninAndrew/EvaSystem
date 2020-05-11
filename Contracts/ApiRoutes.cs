@@ -9,6 +9,7 @@
             public const string RegisterClient = "api/identity/client_register";
             public const string GetAllUsers = "api/identity/get_all_users";
             public const string GetUserInfo = "api/identity/get_user_info/{username}";
+            public const string CheckJWT = "api/identity/check_jwt";
 
 
         }

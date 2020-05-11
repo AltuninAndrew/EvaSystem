@@ -263,7 +263,9 @@ namespace EvaSystem.Services
                         MiddleName = userModel.MiddleName,
                         Position = _positionManager.GetPositionByIDAsync(userModel.PositionId).Result.PositionName,
                         Email = userModel.Email,
-                        AvatarImage = userModel.AvatarImage
+                        AvatarImage = userModel.AvatarImage,
+                        UserRole = userModel.Role,
+                        Username = userModel.UserName,
                     });
                 }
             }

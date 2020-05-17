@@ -22,9 +22,11 @@ namespace EvaSystem.Services.Interfaces
 
         public Task<ChangedInformationResultModel> DeleteUserAsync(string username);
 
+        public Task<IEnumerable<ResponseUserModel>> GetUsersForInteractAsync(string username);
+
         public Task<ChangedInformationResultModel> AddСommunicationsBtwUsersAsync(string username, string[] interectedUsersName);
 
-        public Task<List<ResponseUserModel>> GetInterectedUsersAsync(string username);
+        public Task<List<ResponseUserModel>> GetInteractedUsersAsync(string username);
 
         public Task<ChangedInformationResultModel> DeleteUserFromInterectedUsersTableAsync(string username);
 

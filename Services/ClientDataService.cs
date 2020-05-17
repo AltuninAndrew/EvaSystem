@@ -1,9 +1,11 @@
 ﻿using EvaSystem.Data;
 using EvaSystem.Models;
+using EvaSystem.Services.AuxiliaryHandlers;
 using EvaSystem.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +33,11 @@ namespace EvaSystem.Services
 
             if (foundUser != null)
             {
+                if(newEmail == foundUser.Email)
+                {
+                    return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "New address is no different from the old one" } };
+                }
+
                 foundUser.Email = newEmail;
                 foundUser.UserName = newEmail.Substring(0, newEmail.LastIndexOf('@'));
                 IdentityResult identityResult = await _userManager.UpdateAsync(foundUser);
@@ -166,6 +173,36 @@ namespace EvaSystem.Services
             }
         }
 
+        public async Task<IEnumerable<ResponseUserModel>> GetUsersForInteractAsync(string username)
+        {
+            if (await _userManager.FindByNameAsync(username) == null)
+            {
+                return null;
+            }
+
+
+            var interactUsers = await GetInteractedUsersAsync(username);
+
+            var allUsers = await _userManager.Users.Where(x=>x.UserName!=username).Select(x=> new ResponseUserModel
+            {
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                Position = x.Position.PositionName,
+                MiddleName = x.MiddleName,
+                Email = x.Email,
+                AvatarImage = x.AvatarImage,
+                UserRole = x.Role,
+                Username = x.UserName,
+
+            }).ToListAsync();
+
+
+            var result = allUsers.Except(interactUsers, new UsersComparer());
+
+            return result;
+
+        }
+
         public async Task<ChangedInformationResultModel> AddСommunicationsBtwUsersAsync(string username, string[] interectedUsersName)
         {
             if (await _userManager.FindByNameAsync(username) == null)
@@ -239,7 +276,7 @@ namespace EvaSystem.Services
 
         }
 
-        public async Task<List<ResponseUserModel>> GetInterectedUsersAsync(string username)
+        public async Task<List<ResponseUserModel>> GetInteractedUsersAsync(string username)
         {
             if (await _userManager.FindByNameAsync(username) == null)
             {
@@ -334,6 +371,9 @@ namespace EvaSystem.Services
             return new ChangedInformationResultModel { Success = true };
 
         }
+
+
+
 
     }
 }

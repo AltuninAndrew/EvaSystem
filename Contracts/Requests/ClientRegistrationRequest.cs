@@ -22,7 +22,7 @@ namespace EvaSystem.Contracts.Requests
         [MaxLength(50, ErrorMessage = "Last name lenght should be less then 50 char")]
         public string LastName { get; set; }
 
-        [MinLength(2, ErrorMessage ="Length should be more then 1 chars")]
+        [MinLength(2, ErrorMessage ="Position length should be more then 1 chars")]
         public string Position { get; set; }
     }
 }

@@ -302,6 +302,35 @@ namespace EvaSystem.Controllers
 
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet(ApiRoutes.ClientData.GetUsersForInteract)]
+        public async Task<IActionResult> GetUsersForInteract([FromRoute] string username)
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return Forbid();
+            }
+
+            var response = await _clientDataService.GetUsersForInteractAsync(username);
+
+            if(response == null)
+            {
+                return BadRequest("User not found");
+            }
+
+            if (response.Count() > 0)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest("Users for interact not found");
+            }
+
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost(ApiRoutes.ClientData.AddCommunicationBtwUsers)]
         public async Task<IActionResult> AddCommunicationsBtwUsers([FromRoute] string username, string[] interectedUsersName)
         {
@@ -343,7 +372,7 @@ namespace EvaSystem.Controllers
 
             if (username == userNameFromJwt || userRole == "admin")
             {
-                var response = await _clientDataService.GetInterectedUsersAsync(username);
+                var response = await _clientDataService.GetInteractedUsersAsync(username);
 
                 if (response == null)
                 {

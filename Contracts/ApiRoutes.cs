@@ -25,6 +25,7 @@
             public const string AddUserAvatar = "api/ClientData/add_user_avatar/{username}";
             public const string RemoveUserAvatar = "api/ClientData/remove_user_avatar/{username}";
             public const string DeleteUser = "api/ClientData/delete_user/{username}";
+            public const string GetUsersForInteract = "api/ClientData/get_users_for_interact/{username}";
             public const string AddCommunicationBtwUsers = "api/ClientData/add_interected_users/{username}";
             public const string GetInterectedUsers = "api/ClientData/get_interected_users/{username}";
             public const string DeleteСommunicationBtwUsers = "api/ClientData/delete_interected_users/{username}";

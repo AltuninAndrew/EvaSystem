@@ -23,7 +23,6 @@ namespace EvaSystem.Services.AuxiliaryHandlers
                 await client.ConnectAsync("smtp.yandex.ru", 25, MailKit.Security.SecureSocketOptions.StartTls);
                 await client.AuthenticateAsync("evasystemstankin@yandex.ru", "evasystemstankin2");
                 //await client.ConnectAsync("smtp-mail.outlook.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                //await client.AuthenticateAsync("Al_andr_vl@hotmail.com", "Vecmrf23");
                 await client.SendAsync(emailMessage);
                 await client.DisconnectAsync(true);
             }

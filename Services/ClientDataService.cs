@@ -183,6 +183,7 @@ namespace EvaSystem.Services
 
             var interactUsers = await GetInteractedUsersAsync(username);
 
+
             var allUsers = await _userManager.Users.Where(x=>x.UserName!=username).Select(x=> new ResponseUserModel
             {
                 FirstName = x.FirstName,
@@ -197,10 +198,16 @@ namespace EvaSystem.Services
             }).ToListAsync();
 
 
-            var result = allUsers.Except(interactUsers, new UsersComparer());
-
-            return result;
-
+            if (interactUsers != null)
+            {
+                var result = allUsers.Except(interactUsers, new UsersComparer());
+                return result;
+            }
+            else
+            {
+                return allUsers;
+            }
+           
         }
 
         public async Task<ChangedInformationResultModel> AddСommunicationsBtwUsersAsync(string username, string[] interectedUsersName)

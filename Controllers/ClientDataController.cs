@@ -27,10 +27,11 @@ namespace EvaSystem.Controllers
         [HttpPut(ApiRoutes.ClientData.ChangeEmail)]
         public async Task<IActionResult> ChangeEmail([FromRoute]string username, [FromBody]ClientChangeEmailRequest request)
         {
-            if (request == null)
+            if (request == null || (!ModelState.IsValid))
             {
                 return BadRequest("Request model is not correct");
             }
+                
 
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
             var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
@@ -59,16 +60,16 @@ namespace EvaSystem.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut(ApiRoutes.ClientData.ChangePosition)]
-        public async Task<IActionResult> ChangePosition([FromRoute]string username, string newPosition)
+        public async Task<IActionResult> ChangePosition([FromRoute]string username, [FromBody]ClientChangePositionRequest request)
         {
-            if (string.IsNullOrEmpty(newPosition))
+            if (string.IsNullOrEmpty(request.NewPosition))
             {
                 return BadRequest("Request model is not correct");
             }
 
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
 
-            if (newPosition.Length < 2)
+            if (request.NewPosition.Length < 2)
             {
                 return BadRequest("Length should be more then 1 chars");
             }
@@ -78,7 +79,7 @@ namespace EvaSystem.Controllers
                 return Forbid();
             }
 
-            var changeResponse = await _clientDataService.ChangePositionAsync(username, newPosition);
+            var changeResponse = await _clientDataService.ChangePositionAsync(username, request.NewPosition);
 
             if (changeResponse.Success)
             {
@@ -94,9 +95,9 @@ namespace EvaSystem.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut(ApiRoutes.ClientData.ChangeFirstName)]
-        public async Task<IActionResult> ChangeFirstName([FromRoute]string username, string newFirstName)
+        public async Task<IActionResult> ChangeFirstName([FromRoute]string username, [FromBody]ClientChangeFirstNameRequest request)
         {
-            if (string.IsNullOrEmpty(newFirstName))
+            if (string.IsNullOrEmpty(request.NewFirstName))
             {
                 return BadRequest("Request model is not correct");
             }
@@ -104,14 +105,14 @@ namespace EvaSystem.Controllers
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
             var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
 
-            if (newFirstName.Length < 2)
+            if (request.NewFirstName.Length < 2)
             {
                 return BadRequest("Length should be more then 1 chars");
             }
 
             if (userRole == "admin" || userNameFromJwt == username)
             {
-                var changeResponse = await _clientDataService.ChangeFirstNameAsync(username, newFirstName);
+                var changeResponse = await _clientDataService.ChangeFirstNameAsync(username, request.NewFirstName);
 
                 if (!changeResponse.Success)
                 {
@@ -131,9 +132,9 @@ namespace EvaSystem.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut(ApiRoutes.ClientData.ChangeMiddleName)]
-        public async Task<IActionResult> ChangeMiddleName([FromRoute]string username, string newMiddleName)
+        public async Task<IActionResult> ChangeMiddleName([FromRoute]string username, [FromBody]ClientChangeMiddleNameRequest request)
         {
-            if (string.IsNullOrEmpty(newMiddleName))
+            if (string.IsNullOrEmpty(request.NewMiddleName))
             {
                 return BadRequest("Request model is not correct");
             }
@@ -141,14 +142,14 @@ namespace EvaSystem.Controllers
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
             var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
 
-            if (newMiddleName.Length < 2)
+            if (request.NewMiddleName.Length < 2)
             {
                 return BadRequest("Length should be more then 1 chars");
             }
 
             if (userRole == "admin" || userNameFromJwt == username)
             {
-                var changeResponse = await _clientDataService.ChangeMiddleNameAsync(username, newMiddleName);
+                var changeResponse = await _clientDataService.ChangeMiddleNameAsync(username, request.NewMiddleName);
 
                 if (!changeResponse.Success)
                 {
@@ -168,9 +169,9 @@ namespace EvaSystem.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut(ApiRoutes.ClientData.ChangeLastName)]
-        public async Task<IActionResult> ChangeLastName([FromRoute]string username, string newLastName)
+        public async Task<IActionResult> ChangeLastName([FromRoute]string username, [FromBody]ClientChangeLastNameRequest request)
         {
-            if (string.IsNullOrEmpty(newLastName))
+            if (string.IsNullOrEmpty(request.NewLastName))
             {
                 return BadRequest("Request model is not correct");
             }
@@ -178,14 +179,14 @@ namespace EvaSystem.Controllers
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
             var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
 
-            if (newLastName.Length < 2)
+            if (request.NewLastName.Length < 2)
             {
                 return BadRequest("Length should be more then 1 chars");
             }
 
             if (userRole == "admin" || userNameFromJwt == username)
             {
-                var changeResponse = await _clientDataService.ChangeLastNameAsync(username, newLastName);
+                var changeResponse = await _clientDataService.ChangeLastNameAsync(username,request.NewLastName);
 
                 if (!changeResponse.Success)
                 {
@@ -305,12 +306,16 @@ namespace EvaSystem.Controllers
         [HttpGet(ApiRoutes.ClientData.GetUsersForInteract)]
         public async Task<IActionResult> GetUsersForInteract([FromRoute] string username)
         {
+       
+
             var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
 
             if (userRole != "admin")
             {
                 return Forbid();
             }
+
+
 
             var response = await _clientDataService.GetUsersForInteractAsync(username);
 
@@ -332,9 +337,9 @@ namespace EvaSystem.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost(ApiRoutes.ClientData.AddCommunicationBtwUsers)]
-        public async Task<IActionResult> AddCommunicationsBtwUsers([FromRoute] string username, string[] interectedUsersName)
+        public async Task<IActionResult> AddCommunicationsBtwUsers([FromRoute] string username,[FromBody]ClientAddInteractRequest request)
         {
-            if (interectedUsersName == null)
+            if (request.interactedUsersName == null)
             {
                 return BadRequest("Request model is not correct");
             }
@@ -346,12 +351,12 @@ namespace EvaSystem.Controllers
                 return Forbid();
             }
 
-            if(interectedUsersName.Length==0)
+            if(request.interactedUsersName.Length==0)
             {
                 return BadRequest("Interected users name cannot be null");
             }
 
-            var response = await _clientDataService.AddСommunicationsBtwUsersAsync(username, interectedUsersName);
+            var response = await _clientDataService.AddСommunicationsBtwUsersAsync(username, request.interactedUsersName);
 
             if (response.Success == false)
             {
@@ -391,9 +396,9 @@ namespace EvaSystem.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete(ApiRoutes.ClientData.DeleteСommunicationBtwUsers)]
-        public async Task<IActionResult> DeleteСommunicationBtwUsers([FromRoute] string username, string interectedUserName)
+        public async Task<IActionResult> DeleteСommunicationBtwUsers([FromRoute] string username, [FromBody]ClientDeleteCommunicationRequest request)
         {
-            if (interectedUserName == null)
+            if (request.interactedUserName == null)
             {
                 return BadRequest("Request model is not correct");
             }
@@ -405,7 +410,7 @@ namespace EvaSystem.Controllers
                 return Forbid();
             }
 
-            var response = await _clientDataService.DeleteСommunicationAsync(username, interectedUserName);
+            var response = await _clientDataService.DeleteСommunicationAsync(username, request.interactedUserName);
 
             if(!response.Success)
             {

@@ -121,6 +121,26 @@ namespace EvaSystem.Services
 
         }
 
+        public async Task<IEnumerable<ResponsePositionModel>> GetAllPositions()
+        {
+            var positions = await _positionManager.GetAllPosition();
+
+            if (positions == null || positions.Count == 0)
+            {
+                return null;
+            }
+
+            var result = positions.Select(x => new ResponsePositionModel
+            {
+                PositionName = x.PositionName,
+                Criterions = _dataContext.CriterionsToPosition.Where(xx => xx.PositionId == x.PositionId)
+                    .Select(y => new CriterionModel { Name = y.CriterionName, Weight = y.Criterion.Weight })
+            });
+
+            return result;
+
+        }
+
         public async Task<List<CriterionModel>> GetCriterionsForUserAsync(string username)
         {
             var foundUser = await _userManager.FindByNameAsync(username);

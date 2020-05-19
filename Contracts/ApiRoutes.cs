@@ -42,6 +42,7 @@
             public const string RateUser = "api/Evaluation/rate_user/{username}";
             public const string GetUserRating = "api/Evaluation/get_user_rating/{username}";
             public const string RemoveUserRating = "api/Evaluation/remove_user_rating/{username}";
+            public const string GetAllPositions = "api/Evaluation/get_all_positions";
         }
     
     }

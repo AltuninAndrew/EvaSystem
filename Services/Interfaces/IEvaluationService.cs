@@ -14,6 +14,8 @@ namespace EvaSystem.Services.Interfaces
 
         public Task<List<CriterionModel>> GetCriterionsForUserAsync(string username);
 
+        public Task<IEnumerable<ResponsePositionModel>> GetAllPositions();
+
         public Task<ChangedInformationResultModel> DeleteCriterionsToPosition(string positionName, string[] criterionNames);
 
         public Task<ChangedInformationResultModel> RateUserAsync(string username, ScorePerCriterionModel[] scores);

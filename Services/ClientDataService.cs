@@ -165,6 +165,7 @@ namespace EvaSystem.Services
             {
                 await DeleteUserFromInterectedUsersTableAsync(username);
                 IdentityResult identityResult = await _userManager.DeleteAsync(foundUser);
+                var deletRes = await _positionManager.DeletePositionAsync(foundUser.PositionId);
                 return new ChangedInformationResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description) };
             }
             else

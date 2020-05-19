@@ -20,9 +20,18 @@ namespace EvaSystem.Controllers
             _evaluationService = evaluationService;
         }
 
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost(ApiRoutes.Evaluation.AddCriterions)]
         public async Task<IActionResult> AddCriterions(string positionName, [FromBody]CriterionModel[] request)
         {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return Forbid();
+            }
+
+
             if (request == null)
             {
                 return BadRequest("Request model is not correct");
@@ -59,6 +68,28 @@ namespace EvaSystem.Controllers
             }
 
             return Ok(response);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet(ApiRoutes.Evaluation.GetAllPositions)]
+        public async Task<IActionResult> GetPositions()
+        {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return Forbid();
+            }
+
+            var response = await _evaluationService.GetAllPositions();
+
+            if (response == null || response.Count() == 0)
+            {
+                return Ok("Database with positions is empty");
+            }
+
+            return Ok(response);
+
         }
 
         [HttpGet(ApiRoutes.Evaluation.GetCriterionsForUser)]

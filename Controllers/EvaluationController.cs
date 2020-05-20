@@ -52,9 +52,18 @@ namespace EvaSystem.Controllers
             return Ok(response);
         }
 
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet(ApiRoutes.Evaluation.GetCriterions)]
         public async Task<IActionResult> GetCriterions([FromRoute]string positionName)
         {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return Forbid();
+            }
+
             var response = await _evaluationService.GetCriterionsAsync(positionName);
 
             if(response == null)
@@ -69,6 +78,7 @@ namespace EvaSystem.Controllers
 
             return Ok(response);
         }
+
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet(ApiRoutes.Evaluation.GetAllPositions)]
@@ -85,13 +95,15 @@ namespace EvaSystem.Controllers
 
             if (response == null || response.Count() == 0)
             {
-                return Ok("Database with positions is empty");
+                return BadRequest("Database with positions is empty");
             }
 
             return Ok(response);
 
         }
 
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet(ApiRoutes.Evaluation.GetCriterionsForUser)]
         public async Task<IActionResult> GetCriterionsForUser([FromRoute]string username)
         {
@@ -110,15 +122,26 @@ namespace EvaSystem.Controllers
             return Ok(response);
         }
 
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete(ApiRoutes.Evaluation.DeleteCriterionsForPos)]
-        public async Task<IActionResult> DeleteCriterionsForPos([FromRoute]string positionName, string[] criterionNames)
+        public async Task<IActionResult> DeleteCriterionsForPos([FromRoute]string positionName, [FromBody]ClientDeleteCriterionsRequest request)
         {
-            if (criterionNames == null)
+
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return Forbid();
+            }
+
+
+            if (request == null)
             {
                 return BadRequest("Request model is not correct");
             }
 
-            var response = await _evaluationService.DeleteCriterionsToPosition(positionName, criterionNames);
+            var response = await _evaluationService.DeleteCriterionsToPosition(positionName, request.CriterionsName);
 
             if(response.Success == false)
             {
@@ -129,6 +152,8 @@ namespace EvaSystem.Controllers
 
         }
 
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost(ApiRoutes.Evaluation.RateUser)]
         public async Task<IActionResult> RateUser([FromRoute]string username, [FromBody]ScorePerCriterionModel[] request)
         {
@@ -147,6 +172,8 @@ namespace EvaSystem.Controllers
             return Ok(response);
         }
 
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet(ApiRoutes.Evaluation.GetUserRating)]
         public async Task<IActionResult> GetUserRating([FromRoute]string username)
         {
@@ -160,9 +187,18 @@ namespace EvaSystem.Controllers
             return Ok(response);  
         }
 
+
         [HttpDelete(ApiRoutes.Evaluation.RemoveUserRating)]
         public async Task<IActionResult> RemoveUserRating([FromRoute]string username, string[] criterionNames)
         {
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (userRole != "admin")
+            {
+                return Forbid();
+            }
+
+
             if (criterionNames == null)
             {
                 return BadRequest("Request model is not correct");

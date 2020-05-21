@@ -16,7 +16,7 @@ namespace EvaSystem.Services.Interfaces
 
         public Task<ChangedInformationResultModel> ChangeMiddleNameAsync(string username, string newFirstName);
 
-        public Task<ChangedInformationResultModel> AddAvatarToUserAsync(string username, byte[] image);
+        public Task<ChangedUserAvatarResulModel> AddAvatarToUserAsync(string username, byte[] image);
 
         public Task<ChangedInformationResultModel> RemoveUserAvatarAsync(string username);
 

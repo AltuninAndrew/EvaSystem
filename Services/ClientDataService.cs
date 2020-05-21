@@ -114,24 +114,24 @@ namespace EvaSystem.Services
             }
         }
 
-        public async Task<ChangedInformationResultModel> AddAvatarToUserAsync(string username, byte[] image)
+        public async Task<ChangedUserAvatarResulModel> AddAvatarToUserAsync(string username, byte[] image)
         {
             if((image.Length/1024)>MaxAvatarImageWeightKB)
             {
-                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "Image is too large" } };
+                return new ChangedUserAvatarResulModel { Success = false, ErrorsMessages = new[] { "Image is too large" } };
             }
 
             var foundUser = await _userManager.FindByNameAsync(username);
 
             if(foundUser == null)
             {
-                return new ChangedInformationResultModel { Success = false, ErrorsMessages = new[] { "User not found" } };
+                return new ChangedUserAvatarResulModel { Success = false, ErrorsMessages = new[] { "User not found" } };
             }
 
             foundUser.AvatarImage = image;
 
             IdentityResult identityResult = await _userManager.UpdateAsync(foundUser);
-            return new ChangedInformationResultModel { Success = identityResult.Succeeded, ErrorsMessages = identityResult.Errors.Select(x => x.Description) };
+            return new ChangedUserAvatarResulModel { Success = identityResult.Succeeded, NewAvatarImage=image, ErrorsMessages = identityResult.Errors.Select(x => x.Description) };
         }
 
         public async Task<ChangedInformationResultModel> RemoveUserAvatarAsync(string username)

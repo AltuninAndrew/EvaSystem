@@ -261,12 +261,15 @@ namespace EvaSystem.Services
                         {
                             CriterionName = element.CriterionName,
                             Score = element.Score,
-                            UserId = foundUser.Id
+                            UserId = foundUser.Id,
+                            NumOfTimesRate = 1,
                         });
                     }
                     else
                     {
-                        foundRating.Score = element.Score;
+                        var numOfTimesRate = (foundRating.NumOfTimesRate + 1);
+                        foundRating.Score = ((foundRating.Score*foundRating.NumOfTimesRate) + element.Score)/numOfTimesRate;
+                        foundRating.NumOfTimesRate = numOfTimesRate;
                         _dataContext.Scores.Update(foundRating);
                         countExistRatig++;
                     }
@@ -312,15 +315,20 @@ namespace EvaSystem.Services
                 return null;
             }
 
+            var scoresPerCriterion = await _dataContext.Scores.Where(x => x.UserId == foundUser.Id).Select(x => new ScorePerCriterionModel
+            {
+                CriterionName = x.CriterionName,
+                Score = x.Score
+            }).ToListAsync();
+
+            var currRating = scoresPerCriterion.Select(x => x.Score).Average();
+
             UserRatingInformationModel result = new UserRatingInformationModel
             {
                 UserName = username,
                 PositionName = foundUser.Position.PositionName,
-                ScorePerCriterion = await _dataContext.Scores.Where(x => x.UserId == foundUser.Id).Select(x => new ScorePerCriterionModel
-                {
-                    CriterionName = x.CriterionName,
-                    Score = x.Score
-                }).ToListAsync(),
+                ScorePerCriterion = scoresPerCriterion,
+                CurrentRating = currRating,
             };
 
             return result;

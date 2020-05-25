@@ -16,6 +16,8 @@ namespace EvaSystem.Models
 
         public string CriterionName { get; set; }
 
+        public int NumOfTimesRate { get; set; }
+
         [ForeignKey(nameof(CriterionName))]
         public EvaluationСriterionModel Criterion { get; set; }
 

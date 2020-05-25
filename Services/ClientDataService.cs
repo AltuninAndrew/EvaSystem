@@ -332,7 +332,8 @@ namespace EvaSystem.Services
                 return null;
             }
 
-            var interactedUsers = _dataContext.interectedUsers.Where(x => x.UserName == username).Select(x=>x.InterectedUserName);
+            var interactedUsers = await _dataContext.interectedUsers.Where(x => x.UserName == username).Select(x=>x.InterectedUserName)
+                .ToListAsync();
 
             var resultModels = new List<ResponseUserWtihCritsModel>();
 
@@ -362,6 +363,10 @@ namespace EvaSystem.Services
                      });
                 }
             }
+
+            _dataContext.Database.CloseConnection();
+            await _dataContext.DisposeAsync();
+           
 
             return resultModels;
         }

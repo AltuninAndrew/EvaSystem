@@ -130,10 +130,12 @@ namespace EvaSystem.Services
                 return null;
             }
 
+            var critToPos = await _dataContext.CriterionsToPosition.Include(x => x.Criterion).ToListAsync();
+
             var result = positions.Select(x => new ResponsePositionModel
             {
                 PositionName = x.PositionName,
-                Criterions = _dataContext.CriterionsToPosition.Where(xx => xx.PositionId == x.PositionId)
+                Criterions = critToPos.Where(xx => xx.PositionId == x.PositionId)
                     .Select(y => new CriterionModel { Name = y.CriterionName, Weight = y.Criterion.Weight })
             });
 

@@ -73,7 +73,7 @@ namespace EvaSystem.Services
 
         public async Task<AuthResultModel> LoginAsync(string email, string password)
         {
-            //var existingUser = await _userManager.FindByEmailAsync(email);
+
             var existingUser = await _dataContext.Users.SingleOrDefaultAsync(x => x.Email == email);
 
             if (existingUser !=null && await _userManager.CheckPasswordAsync(existingUser,password))
@@ -180,6 +180,7 @@ namespace EvaSystem.Services
                 UserRole = userModel.Role,
                 Username = userModel.UserName,
             };
+           
         }
 
     }

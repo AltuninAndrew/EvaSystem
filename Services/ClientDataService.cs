@@ -325,6 +325,47 @@ namespace EvaSystem.Services
             }
         }
 
+        public async Task<IEnumerable<ResponseUserWtihCritsModel>> GetInteractedUsersWithCritsAsync(string username)
+        {
+            if (await _userManager.FindByNameAsync(username) == null)
+            {
+                return null;
+            }
+
+            var interactedUsers = _dataContext.interectedUsers.Where(x => x.UserName == username).Select(x=>x.InterectedUserName);
+
+            var resultModels = new List<ResponseUserWtihCritsModel>();
+
+            UserModel userModel = null;
+            PositionModel userPosition = null;
+            List<string> userCriterions = null;
+            
+            foreach(var interactUserName in interactedUsers)
+            {
+                userModel = await _userManager.FindByNameAsync(interactUserName);
+                userPosition = await _positionManager.GetPositionByIDAsync(userModel.PositionId);
+                userCriterions = await _dataContext.CriterionsToPosition.Where(x => x.PositionId == userModel.PositionId)
+                    .Select(x=>x.CriterionName).ToListAsync();
+
+                if(userModel != null && userPosition!=null)
+                {
+                    resultModels.Add(new ResponseUserWtihCritsModel
+                    {
+                        UserName = interactUserName,
+                        FirstName = userModel.FirstName,
+                        MiddleName = userModel.MiddleName,
+                        LastName = userModel.LastName,
+                        AvatarImage = userModel.AvatarImage,
+                        Email = userModel.Email,
+                        Position = userPosition.PositionName,
+                        CriterionsName = userCriterions,
+                     });
+                }
+            }
+
+            return resultModels;
+        }
+
         public async Task<ChangedInformationResultModel> DeleteUserFromInterectedUsersTableAsync(string username)
         {
             if (await _userManager.FindByNameAsync(username) == null)
@@ -379,9 +420,6 @@ namespace EvaSystem.Services
             return new ChangedInformationResultModel { Success = true };
 
         }
-
-
-
 
     }
 }

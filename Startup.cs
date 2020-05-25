@@ -75,7 +75,7 @@ namespace EvaSystem
 
 
             services.AddSwaggerGen(x => { 
-                x.SwaggerDoc("v1.0", new OpenApiInfo { Title = "EvaSystem Api", Version = "v1.0" });
+                x.SwaggerDoc("v0.1", new OpenApiInfo { Title = "EvaSystem Api", Version = "v0.1" });
 
                 x.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {

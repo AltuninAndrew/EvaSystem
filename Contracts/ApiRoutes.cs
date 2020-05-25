@@ -28,6 +28,7 @@
             public const string GetUsersForInteract = "api/ClientData/get_users_for_interact/{username}";
             public const string AddCommunicationBtwUsers = "api/ClientData/add_interected_users/{username}";
             public const string GetInterectedUsers = "api/ClientData/get_interected_users/{username}";
+            public const string GetInteractedUsersWithCrits = "api/ClientData/get_interacted_users_with_crits/{username}";
             public const string DeleteСommunicationBtwUsers = "api/ClientData/delete_interected_users/{username}";
             public const string DeleteUserFromInterectedUsersTable = "api/ClientData/delete_all_communications/{username}";
         }

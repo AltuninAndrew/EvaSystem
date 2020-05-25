@@ -395,6 +395,32 @@ namespace EvaSystem.Controllers
 
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet(ApiRoutes.ClientData.GetInteractedUsersWithCrits)]
+        public async Task<IActionResult> GetInteractedUsersWithCrits([FromRoute] string username)
+        {
+            var userNameFromJwt = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "UserName").Value.ToString();
+            var userRole = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Role").Value.ToString();
+
+            if (username == userNameFromJwt || userRole == "admin")
+            {
+                var response = await _clientDataService.GetInteractedUsersWithCritsAsync(username);
+
+                if (response == null)
+                {
+                    return BadRequest("User not found or user have not interacted users");
+                }
+
+                return Ok(response);
+
+            }
+            else
+            {
+                return Forbid();
+            }
+        }
+
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete(ApiRoutes.ClientData.DeleteСommunicationBtwUsers)]
         public async Task<IActionResult> DeleteСommunicationBtwUsers([FromRoute] string username, [FromBody]ClientDeleteCommunicationRequest request)
         {
